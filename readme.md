@@ -3,14 +3,17 @@
 An ESP32 based doorbell for use with home assistant with the doorbell sound of your choice via SD card.
 
 - A robust 3D printed structure for mounting on a DIN rail
+- fully functional doorbell running independent from home assistant
+- can be used as audio output device for any automation in home assistant - not limited to doorbell usecase
 - provide your own sounds via MP3 SD card
 - support for doorbell light including light effects when ringing  
-- Integrated into home assistant via ESP home so that you can use the doorbell to trigger subsequent actions and automations.  
+- Integrated into home assistant via ESP home so that you can use the doorbell to trigger subsequent actions and automations 
 - low cost hardware <10 USD
-- can be used as audio output device for any automation - not limited to doorbell usecase
+- optional 5V power supply including double USB C port
 - Example code provided (e.g. trigger camera snapshot)
 
-![rendering](./print/rendering/rendering.png)
+![rendering_doorbell_case](./print/rendering/rendering_doorbell_case.png)
+![rendering_power_supply](./print/rendering/rendering_power_supply.png)
 
 
 ## Mechanics
@@ -32,6 +35,7 @@ All external connection are via screw connectors.
 
 ### 3D-Printed Parts
 
+ESP doorbell:
 | Filename                     | Thumbnail                                                           | Required |
 | ---------------------------- | --------------------------------------------------------------------| -------- |
 | `./print/case.stl`           | <img src="./print/rendering/case.png" alt="frame" width="300"/>     | 1        |
@@ -41,6 +45,12 @@ All external connection are via screw connectors.
 | `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" alt="label_top"/>        | optional |
 | `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" alt="label_bottom"/>  | optional |
 
+Optional: separate 5V power supply:
+| Filename                     | Thumbnail                                                           | Required |
+| ---------------------------- | --------------------------------------------------------------------| -------- |
+| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall"/>         | 1        |
+| `./print/power_supply.stl`   | <img src="./print/rendering/power_supply.png" alt="pwoer_supply"/>  | 1        |
+
 Printer settings:
 - All printed parts designed for PETG. 
 - Best experience on my printer was to print the case using tree style support. 
@@ -48,27 +58,43 @@ Printer settings:
 
 ### Required screws
 
+ESP doorbell:
 | Name              | Spec    | Required |
 | ----------------- | ------- | -------- |
 | Countersunk screw | M4 6mm  | 6        |
 
+Optional: separate 5V power supply:
+| Name              | Spec    | Required |
+| ----------------- | ------- | -------- |
+| Countersunk screw | M4 6mm  | 6        |
+
+
 ## Assembly
 
-Use hotglue to hold all components in place (screw terminals, ESP32 and RF player).
+Use hotglue to hold all electronic components in place within the housing (screw terminals, ESP32 and RF player).
+
+Screw the side wall to the base of the case via the M4 screws.
 
 
 ## Electronics
 
 ### Part list
 
+ESP doorbell:
 | Name                         | Required          | Note      |
 | ---------------------------- | ----------------- | --------- |
 | ESP32 WROOM USB-C Dev Module | 1                 |           |
 | DF Player mini               | 1                 |           |
+| Screw Terminals              | 2 x 6             | 5mm       |
 | micro SD card                | 1                 | to Hold MP3 files. Check DF player specs to pick the right card, e.g. max capacity |
 | 8 Ohm Speaker                | 1                 |           |
 | Doorbell button              | 1                 | consider using button including 5V LED lighting |
 
+
+5V power supply:
+| Screw Terminals              | 2 x 2             | 5mm       |
+| 5V power supply              | 1                 |           |
+| USB connector                | 2                 |           |
 
 
 
