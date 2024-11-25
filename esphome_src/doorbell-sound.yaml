@@ -1,0 +1,430 @@
+substitutions:
+  # GPIO Pins
+  pin_dfPlayer_tx: GPIO26 # TX Leitung am ESP. entspr. Pin 15 am ESP. Lila Leitung. Geht auf Pin 2 (RX) am DF Player
+  pin_dfPlayer_rx: GPIO27 # RX Leitung am ESP. entspr. Pin 16 am ESP. Graue Leitung. Geht auf Pin 3 (TX) am DF Player
+  pin_doorbell_switch: GPIO33 # Taster Türklingel (gegen Masse)
+  pin_doorbell_light: GPIO32 # Beleuchtung Türklingel (gegen Masse)
+
+  # Default Settings
+  default_sound: "005 melodic classic doorbell" # Initialwert für Melodie
+  default_sound_index: "5" # Index for default value
+  default_volume: '30' # initialwert für Lautstärke (von 0...30)
+
+  # LED Effects
+  fast_pulse_effect_name: "Fast Pulse"
+  fast_pulse_transition: 0.1s
+  fast_pulse_interval: 0.1s
+  min_brightness: 0%
+  max_brightness: 100%
+
+
+
+esphome:
+  name: doorbell-sound
+  friendly_name: Doorbell
+  comment: MP3 Doorbell with HA integration
+  compile_process_limit: 1
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+    version: recommended
+
+
+
+
+# Enable logging
+logger:
+
+ota:
+  - platform: esphome
+    password: "3f6786b29f445e0ac078c0bfec10c81d"
+
+wifi:
+#  use_address: esphome-web-38fec0.local # Manually point to old name in order to be able to rename
+
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Doorbell-Sound Fallback Hotspot"
+    password: "cWavxIxc6o5K"
+
+# In combination with the `ap` this allows the user
+# to provision wifi credentials to the device via WiFi AP.
+captive_portal:
+
+# Allow provisioning Wi-Fi via serial
+#improv_serial:
+
+#dashboard_import:
+#  package_import_url: github://esphome/example-configs/esphome-web/esp32.yaml@main
+#  import_full_config: true
+
+# Sets up Bluetooth LE (Only on ESP32) to allow the user
+# to provision wifi credentials to the device.
+esp32_improv:
+  authorizer: none
+
+# To have a "next url" for improv serial
+web_server:
+  port: 80
+  version: 3  
+
+
+
+
+uart:
+  tx_pin: ${pin_dfPlayer_tx}
+  rx_pin: ${pin_dfPlayer_rx}
+  baud_rate: 9600
+
+dfplayer:
+  id: df_player
+  on_finished_playback:
+    then:
+      - lambda: |-
+          ESP_LOGW("doorbell.yaml", "Doorbell playback finished!");
+      - light.turn_off: onboard_led
+      - if:
+          condition:
+            lambda: |-
+              return id(doorbell_led).state;
+          then:
+            - light.turn_on:
+                id: doorbell_led_internal
+                effect: "None"
+          else:
+            - light.turn_off:
+                id: doorbell_led_internal
+
+
+# Switch to set lighting of doorbell (e.g. during night)
+switch:
+  - platform: template
+    name: "Doorbell LED"
+    id: doorbell_led
+    icon: "mdi:lightbulb"
+    turn_on_action:
+      - light.turn_on:
+          id: doorbell_led_internal
+          effect: "None"
+    turn_off_action:
+      - light.turn_off:
+          id: doorbell_led_internal
+
+
+
+# button to test the doorbell
+button:
+  - platform: template
+    name: "Test"
+    icon: "mdi:run"
+    on_press:
+      then:
+        - script.execute: trigger_doorbell
+
+  - platform: shutdown
+    entity_category: diagnostic
+    name: "Shutdown"
+  - platform: restart
+    entity_category: diagnostic
+    name: "Restart"
+
+    
+
+number:
+  - platform: template
+    name: "Volume"
+    id: var_volume
+    icon: "mdi:volume-high"
+    optimistic: true
+    min_value: 0
+    max_value: 30
+    step: 1
+    initial_value: ${default_volume}
+
+
+light: # Status auf LED anzeigen, die zudem schaltbar ist als Entität 
+  - platform: status_led
+    name: "Onboard Status LED"
+    icon: "mdi:led-on"
+    id: "onboard_led"
+    output: onboard_led_output
+    entity_category: diagnostic
+
+  - platform: monochromatic
+    name: "Doorbell LED"
+    id: "doorbell_led_internal"
+    output: doorbell_light_output
+    effects:
+      - pulse:
+          name: ${fast_pulse_effect_name}
+          transition_length: ${fast_pulse_transition}
+          update_interval: ${fast_pulse_interval}
+          min_brightness: ${min_brightness}
+          max_brightness: ${max_brightness}
+    internal: true
+
+
+select:
+  - platform: template
+    name: Ringtone
+    id: ringtone_select
+    options:
+     - "001 alert bells echo"
+     - "002 cartoon door melodic bell"
+     - "003 futuristic cinematic sweep"
+     - "004 futuristic doorbell"
+     - "${default_sound}"
+     - "006 repeating arcade beep"
+     - "007 retro game notification"
+     - "008 software interface back"
+     - "009 software inteface remove"
+     - "010 terror transition"
+     - "011 trumpet fanfare"
+     - "012 uplifting glute notfication"
+     - "013 vintage telephone ringtone"
+     - "014 wolf creature howling roar"
+     - "015 arcade-retro-game-over"
+     - "016 cartoon-character-cute-sneeze"
+     - "017 cartoon-toy-whistle"
+     - "018 casino-bling-achievement"
+     - "019 game-over-trombone"
+     - "020 guitar-notification-alert"
+     - "021 horror-movie-transition"
+     - "022 industry-alarm-tone"
+     - "023 melodical flute"
+     - "024 sad game over trombone"
+     - "025 sci-fi lightsaber on"
+     - "026 software interface back"
+     - "027 toy whistler bird"
+     - "028 battle man scream"
+     - "029 cool guitar riff"
+     - "030 drum roll"
+     - "031 electric guitar distorted slide"
+     - "032 epic orchestra transition"
+     - "033 flute cell phone alert"
+     - "034 guitar notification alert"
+     - "035 guitar stroke down slow"
+     - "036 guitar stroke up slow"
+     - "037 happy guitar-chords"
+     - "038 melodic church bell"
+     - "039 movie trailer synth impact"
+     - "040 nasty creature roar"
+     - "041 relaxing bell chime"
+     - "042 short guitar riff"
+     - "043 synth-calculator-melody"
+     - "044 synth metal rhythm"
+     - "045 synth pass"
+     - "046 cash register"
+     - "047 Facility Alarm"
+     - "048 Classic Alarm"
+     - "049 Alert Alarm"
+    initial_option: ${default_sound}
+    icon: mdi:music
+    optimistic: true
+    on_value:
+      then:
+        - lambda: |-
+            ESP_LOGI("doorbell.yaml", "Doorbell ringtone changed! (Ringtone %03d.mp3: %s)", i, x.c_str());
+
+
+
+output: 
+# Interne LED an GPIO2 nutzen 
+  - id: onboard_led_output
+    platform: gpio
+    pin: GPIO2
+
+# PWM output
+  - id: doorbell_light_output
+    platform: ledc
+    pin: ${pin_doorbell_light}
+
+
+#-------------------------------------------
+# Sensoren
+# Erzeugt Eingangswerte, die vom HA gelesen werden und hier genutzt werden können
+#-------------------------------------------
+
+
+binary_sensor:
+  - platform: gpio
+    name: "Doorbell"
+    # device_class: window --> no device class for simple switches available, just use defaults
+    pin:
+      number: ${pin_doorbell_switch}
+      mode:
+        input: true
+        # Schalter zieht gegen Masse. Pull up muss eingeschaltet sein. 
+        pullup: true
+      # Taster gedrückt schaltet gegen Masse und ist daher low - durch invertieren geht Sensor auf High bei Druck auf Türklingel
+      inverted: true 
+    filters:
+      - delayed_on: 10ms # debounce
+    on_press:
+      - script.execute: trigger_doorbell
+
+
+sensor:
+# DIAGNOSTIC VALUES ****************************************************************
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: diagnostic
+    internal: true
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Strength"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "%"
+    entity_category: diagnostic
+# END DIAGNOSTIC VALUES ****************************************************************
+
+
+
+text_sensor:
+# DIAGNOSTIC VALUES ****************************************************************
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+      entity_category: diagnostic
+    ssid:
+      name: "Connected SSID"
+      entity_category: diagnostic
+    mac_address:
+      name: "Mac Address"
+      entity_category: diagnostic
+# END DIAGNOSTIC VALUES ****************************************************************
+
+
+
+script:
+  - id: trigger_doorbell
+    then:
+      - lambda: |-
+          int volume = (int)(id(var_volume).state);
+          id(df_player).set_volume(volume);
+      - delay: 150ms # some delay to make sure the df player has processed previous command
+      - lambda: |-
+          int volume = (int)(id(var_volume).state);
+          auto ringtone_string = id(ringtone_select).state.c_str();
+          auto ringtone_index = id(ringtone_select).active_index();
+          int ringtone;
+          if (ringtone_index.has_value()) {
+            ringtone = ringtone_index.value() + 1;
+            ESP_LOGI("doorbell.yaml", "Doorbell triggered! (Volume %d/30; Ringtone %03d.mp3: %s)", volume, ringtone, ringtone_string);
+          } else {
+            ringtone = ${default_sound_index};
+            ESP_LOGW("doorbell.yaml", "Doorbell triggered but cannot determin selected ringtone. Will use default");
+          }
+          id(df_player).play_file(ringtone);
+      - light.turn_on: onboard_led
+      - light.turn_on:
+          effect: ${fast_pulse_effect_name}
+          id: doorbell_led_internal
+
+
+
+#-------------------------------------------
+# API
+# Enable Home Assistant API
+# Expose all functions of DF player also for remote access e.g. in automations
+#-------------------------------------------
+api:
+  encryption:
+    key: "Tl2rJtTss0xoQ792MStUvP3Lopg0qZX50jRWxrQ8y3E="
+
+  actions:
+  - action: dfplayer_next
+    then:
+      - dfplayer.play_next:
+  - action: dfplayer_previous
+    then:
+      - dfplayer.play_previous:
+  - action: dfplayer_play
+    variables:
+      file: int
+    then:
+      - dfplayer.play: !lambda 'return file;'
+  - action: dfplayer_play_loop
+    variables:
+      file: int
+      loop_: bool
+    then:
+      - dfplayer.play:
+          file: !lambda 'return file;'
+          loop: !lambda 'return loop_;'
+  - action: dfplayer_play_folder
+    variables:
+      folder: int
+      file: int
+    then:
+      - dfplayer.play_folder:
+          folder: !lambda 'return folder;'
+          file: !lambda 'return file;'
+
+  - action: dfplayer_play_loop_folder
+    variables:
+      folder: int
+    then:
+      - dfplayer.play_folder:
+          folder: !lambda 'return folder;'
+          loop: true
+
+  - action: dfplayer_set_device_tf
+    then:
+      - dfplayer.set_device: TF_CARD
+
+  - action: dfplayer_set_device_usb
+    then:
+      - dfplayer.set_device: USB
+
+  - action: dfplayer_set_volume
+    variables:
+      volume: int
+    then:
+      - dfplayer.set_volume: !lambda 'return volume;'
+  - action: dfplayer_set_eq
+    variables:
+      preset: int
+    then:
+      - dfplayer.set_eq: !lambda 'return static_cast<dfplayer::EqPreset>(preset);'
+
+  - action: dfplayer_sleep
+    then:
+      - dfplayer.sleep
+
+  - action: dfplayer_reset
+    then:
+      - dfplayer.reset
+
+  - action: dfplayer_start
+    then:
+      - dfplayer.start
+
+  - action: dfplayer_pause
+    then:
+      - dfplayer.pause
+
+  - action: dfplayer_stop
+    then:
+      - dfplayer.stop
+
+  - action: dfplayer_random
+    then:
+      - dfplayer.random
+
+  - action: dfplayer_volume_up
+    then:
+      - dfplayer.volume_up
+
+  - action: dfplayer_volume_down
+    then:
+      - dfplayer.volume_down
