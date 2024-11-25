@@ -41,9 +41,10 @@ All external connection are via screw connectors.
 | `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" alt="label_top"/>        | optional |
 | `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" alt="label_bottom"/>  | optional |
 
-All printed parts designed for PETG. 
-Best experience on my printer was to print the case using tree style support. 
-No rafts/brim etc. reguired for any model.
+Printer settings:
+- All printed parts designed for PETG. 
+- Best experience on my printer was to print the case using tree style support. 
+- No rafts/brim etc. reguired for any model.
 
 ### Required screws
 
@@ -66,21 +67,25 @@ Use hotglue to hold all components in place (screw terminals, ESP32 and RF playe
 | DF Player mini               | 1                 |           |
 | micro SD card                | 1                 | to Hold MP3 files. Check DF player specs to pick the right card, e.g. max capacity |
 | 8 Ohm Speaker                | 1                 |           |
-| Doorbell button              | 1                 | optional LED lighting |
+| Doorbell button              | 1                 | consider using button including 5V LED lighting |
 
 
 
 
 ### Schematics
 
-TBD
+The wiring in the case is pretty much self explanatory and you can use the screw terminals according to your needs.
 
-- DF Player RX (Pin 2) = ESP GPIO26 TX (Pin 15)
-- DF Player TX (Pin 3) = ESP GPIO27 RX (Pin 16)
-- DF Player Spk1+Spk2 = Speaker 8 Ohm
-- Doorbell button = GPIO33 (internal pullup)
-- Doorbell LED = GPIO32
+If you want to use the same screw terminal connections I used, then please take a look at the labeling models and what they tell which screw terminal is used for which purpose. 
 
+Make sure to establish the following connections within the housing between ESP, DF Player and terminals:
+- ESP GPIO26 TX (Pin 15) --> DF Player RX (Pin 2)
+- ESP GPIO27 RX (Pin 16) --> DF Player TX (Pin 3)
+- DF Player Spk1+Spk2 --> Speaker 8 Ohm
+- ESP GPIO33 (internal pullup) --> Doorbell button
+- ESP GPIO32 --> Doorbell LED
+- 5V and GND from screw terminal to DF player and ESP
+- Consider connecting ground to two more screw terminals to be used for the LED and the button
 
 
 # Example usages 
@@ -228,8 +233,6 @@ As the doorbell provides an API with full control of the DF player, you can use 
 An example would be, to play a sound to not forget to switch off the lights when leaving home (e.g. when your front door contact is triggered).
 
 For this, you can add to your SD card suitable sound effects or even prepare TTS output in MP3s (there are free tools on the internet to create such MP3s for predefined text input via TTS services).
-
-Source code for these scripts is under `./ha_scripts`
 
 ```yaml
 triggers:
