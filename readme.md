@@ -12,8 +12,12 @@ An ESP32 based doorbell for use with home assistant with the doorbell sound of y
 - optional 5V power supply including double USB C port
 - Example code provided (e.g. trigger camera snapshot)
 
-![rendering_doorbell_case](./print/rendering/rendering_doorbell_case.png)
-![rendering_power_supply](./print/rendering/rendering_power_supply.png)
+
+| Doorbell DIN rail case | Optional 5V power supply including double USB power out |
+| ---------------------------- | --------------------------------------------------------------------| -------- |
+| ![rendering_doorbell_case](./print/rendering/rendering_doorbell_case.png)  | ![rendering_power_supply](./print/rendering/rendering_power_supply.png) |
+
+
 
 
 ## Mechanics
@@ -22,15 +26,9 @@ The only mechanical part required is the housing for the electronics.
 The case consist of a base and a side wall connected via screws. 
 It can fit on a DIN rail and is tightened via a hook. 
 
-If you have two color print capability, you can optionally print label for the screw connectors and the top of the case.
+If you want to build the 5V power supply as well, you can use the same side wall as for the doorbell case.
 
-
-All external connection are via screw connectors.
-- Power supply is 5V DC (you can use low cost DIN rail power supply for this. Do not use your old fashioned bell transformer as this is AC!)
-- Can be connected to a single 8 Ohm speaker for output, output volume is controlled via SW.
-- The bell button is a simple closing contact to ground with internal pullup.
-- Optionally, an LED can be attached via GPIO output connected to ground, e.g. to light up the bell button at night.
-
+If you have two color print capability, you can optionally print labels for the screw connectors and the top of the case.
 
 
 ### 3D-Printed Parts
@@ -45,11 +43,15 @@ ESP doorbell:
 | `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" alt="label_top"/>        | optional |
 | `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" alt="label_bottom"/>  | optional |
 
+
+
 Optional: separate 5V power supply:
 | Filename                     | Thumbnail                                                           | Required |
 | ---------------------------- | --------------------------------------------------------------------| -------- |
 | `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall"/>         | 1        |
 | `./print/power_supply.stl`   | <img src="./print/rendering/power_supply.png" alt="pwoer_supply"/>  | 1        |
+
+
 
 Printer settings:
 - All printed parts designed for PETG. 
@@ -58,10 +60,13 @@ Printer settings:
 
 ### Required screws
 
+
 ESP doorbell:
 | Name              | Spec    | Required |
 | ----------------- | ------- | -------- |
 | Countersunk screw | M4 6mm  | 6        |
+
+
 
 Optional: separate 5V power supply:
 | Name              | Spec    | Required |
@@ -74,6 +79,8 @@ Optional: separate 5V power supply:
 Use hotglue to hold all electronic components in place within the housing (screw terminals, ESP32 and RF player).
 
 Screw the side wall to the base of the case via the M4 screws.
+
+Fit the cases to the DIN rail and fix them inserting the hook.
 
 
 ## Electronics
@@ -102,7 +109,9 @@ ESP doorbell:
 
 The wiring in the case is pretty much self explanatory and you can use the screw terminals according to your needs.
 
+
 If you want to use the same screw terminal connections I used, then please take a look at the labeling models and what they tell which screw terminal is used for which purpose. 
+
 
 Make sure to establish the following connections within the housing between ESP, DF Player and terminals:
 - ESP GPIO26 TX (Pin 15) --> DF Player RX (Pin 2)
@@ -112,6 +121,13 @@ Make sure to establish the following connections within the housing between ESP,
 - ESP GPIO32 --> Doorbell LED
 - 5V and GND from screw terminal to DF player and ESP
 - Consider connecting ground to two more screw terminals to be used for the LED and the button
+
+
+All external connection are done via the screw connectors:
+- Power supply is 5V DC and can be optionally build using the parts described herein (Warning, this is dangerous voltage level!). If you want to be on the safe side, buy a suitable standard DIN rail power supply from the shelf. Do not use your old fashioned bell transformer as this is AC!
+- Can be connected directly to a single 8 Ohm speaker for output. No further amp required, also no resistors for volume regulation as output volume is controlled via SW.
+- The bell button is a simple closing contact to ground with internal pullup.
+- Optionally, an LED can be attached via GPIO output connected to ground, e.g. to light up the bell button at night. Please note that this is directly connected to GPIO of the ESP, so don't draw too much current (should be sufficient for up to 4 standard LEDs though)!
 
 
 # Example usages 
