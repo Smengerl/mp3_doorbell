@@ -161,24 +161,25 @@ Tip: Consider seasonal modes such as special Halloween sounds for your doorbell
 
 As the doorbell exposes the doorbell button as entity in HA, you can use a change to this entity state to trigger automations.
 This can be anything, e.g. switching the light on at the door when its dark.
+
+
 A more advanced usecase would be to take a snapshot of the visitor and interpret it via Gemini integration in order to send you a push notification including information about who rang the bell.
 
-This can be achieved by adding the Gemini add on to HA and some automation.
-I use the following prompt:
+
+This can be achieved by adding the Gemini generative AI integration to your HA and add some automations.
+
+Using the following prompt you can interpret a camera image:
 ```
-Very briefly describe what you see in the brick semi-circle area
-in front of my frontdoor in this image taken when the doorbell was rung.
-Your message needs to be very short to fit in a phone notification and
-must not be longer than a single sentence. Don't describe stationary
-objects or buildings or vehicles in driveway. If you cannot identify
-people for sure, then tell me so. Otherwise tell me whether it seems
-to be visitors such as kids or a family or if it is a handcraftsman, a
-postman or a delivery man.  Please don't describe their clothing. Please
-tell me if there is no one but there is a parcel or other item that they
-left in front of the door."
+Very briefly describe what you see in the brick semi-circle area in front of my frontdoor in this image that was taken when the doorbell was rung.
+Your message needs to be very short to fit in a phone notification and must not be longer than a single sentence. 
+Don't describe stationary objects or buildings or vehicles in driveway. 
+If you cannot identify people for sure, then tell me so. 
+Otherwise tell me whether it seems to be visitors such as kids or a family or if it is a handcraftsman, a postman or a delivery man.  
+Please don't describe their clothing. 
+Please tell me if there is no one but there is a parcel or other item that they left at the door.
 ```
 
-Example automation (using some helper scripts to create and uptate push notification to mobile devices for illustrative reasons):
+Example automation that uses this prompt and embedds it into a fully automated flow triggered when the doorbell is rung:
 ```yaml
   triggers:
   - trigger: state
@@ -218,8 +219,7 @@ Example automation (using some helper scripts to create and uptate push notifica
       default:
       - entity_id: camera.camera_frontdoor
         data:
-          filename: /media/frontdoor_camera/archive/motion_{{now().strftime("%Y%m%d-%H%M%S")
-            }}.jpg
+          filename: /media/frontdoor_camera/archive/motion_{{now().strftime("%Y%m%d-%H%M%S")}}.jpg
         enabled: true
         action: camera.snapshot
       - entity_id: camera.camera_frontdoor
@@ -229,16 +229,7 @@ Example automation (using some helper scripts to create and uptate push notifica
     - choose: []
       default:
       - data:
-          prompt: "Very briefly describe what you see in the brick semi-circle area
-            in front of my frontdoor in this image taken when the doorbell was rung.
-            \nYour message needs to be very short to fit in a phone notification and
-            must not be longer than a single sentence. \nDon't describe stationary
-            objects or buildings or vehicles in driveway. \nIf you cannot identify
-            people for sure, then tell me so. \nOtherwise tell me whether it seems
-            to be visitors such as kids or a family or if it is a handcraftsman, a
-            postman or a delivery man.  Please don't describe their clothing. Please
-            tell me if there is no one but there is a parcel or other item that they
-            left in front of the door."
+          prompt: "YOUR PROMPT HERE"
           image_filename: '{{ snapshot_create_file_path }}'
         response_variable: generated_content
         action: google_generative_ai_conversation.generate_content
@@ -248,7 +239,7 @@ Example automation (using some helper scripts to create and uptate push notifica
           - YOURDEVICEID
           notify_home_or_away: Both
           data_notification_icon: mdi:doorbell
-          notify_title: Türklingel {{ time }}
+          notify_title: Doorbell {{ time }}
           notify_message: '{{ generated_content.text }}'
           data_visibility: public
           data_ios_interruption_level: time-sensitive
@@ -267,6 +258,8 @@ Example automation (using some helper scripts to create and uptate push notifica
   mode: parallel
   max: 10
 ```
+Note that his usees helper scripts not shown here to create and uptate push notification to mobile devices)
+
 
 
 ## Home Reminder
