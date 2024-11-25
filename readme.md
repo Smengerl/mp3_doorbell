@@ -32,14 +32,18 @@ All external connection are via screw connectors.
 
 ### 3D-Printed Parts
 
-| Filename       | Thumbnail                                                           | Required |
-| -------------- | --------------------------------------------------------------------| -------- |
-| case           | <img src="./print/rendering/case.png" alt="frame" width="300"/>     | 1        |
-| sidewall       | <img src="./print/rendering/sidewall.png" alt="side wall"/>         | 1        |
-| hook           | <img src="./print/rendering/hook.png" alt="hook"/>                  | 1        |
-| label          | <img src="./print/rendering/label.png" alt="label"/>                | optional |
-| label_top      | <img src="./print/rendering/label_top.png" alt="label_top"/>        | optional |
-| label_bottom   | <img src="./print/rendering/label_bottom.png" alt="label_bottom"/>  | optional |
+| Filename                     | Thumbnail                                                           | Required |
+| ---------------------------- | --------------------------------------------------------------------| -------- |
+| `./print/case.stl`           | <img src="./print/rendering/case.png" alt="frame" width="300"/>     | 1        |
+| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall"/>         | 1        |
+| `./print/hook.stl`           | <img src="./print/rendering/hook.png" alt="hook"/>                  | 1        |
+| `./print/label.stl`          | <img src="./print/rendering/label.png" alt="label"/>                | optional |
+| `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" alt="label_top"/>        | optional |
+| `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" alt="label_bottom"/>  | optional |
+
+All printed parts designed for PETG. 
+Best experience on my printer was to print the case using tree style support. 
+No rafts/brim etc. reguired for any model.
 
 ### Required screws
 
