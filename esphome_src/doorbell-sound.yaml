@@ -117,11 +117,27 @@ switch:
 
 
 
+
+event:
+  - platform: template
+    name: Doorbell button
+    id: doorbell_event
+    device_class: doorbell
+    # icon: "mdi:doorbell"
+    event_types: 
+      - button_pressed
+    on_event:
+      then:
+        - lambda: |-
+            ESP_LOGD("epaper-display.yaml", "Doorbell button pressed event %s triggered.", event_type.c_str());
+
+
 # button to test the doorbell
 button:
   - platform: template
     name: "Test"
     icon: "mdi:run"
+    entity_category: diagnostic
     on_press:
       then:
         - script.execute: trigger_doorbell
@@ -253,7 +269,7 @@ output:
 
 binary_sensor:
   - platform: gpio
-    name: "Doorbell"
+    name: "Doorbell Button"
     # device_class: window --> no device class for simple switches available, just use defaults
     pin:
       number: ${pin_doorbell_switch}
@@ -309,9 +325,11 @@ script:
   - id: trigger_doorbell
     then:
       - lambda: |-
+          id(doorbell_event).trigger("button_pressed");
+
           int volume = (int)(id(var_volume).state);
           id(df_player).set_volume(volume);
-      - delay: 150ms # some delay to make sure the df player has processed previous command
+      - delay: 150ms # some delay to m ake sure the df player has processed previous command
       - lambda: |-
           int volume = (int)(id(var_volume).state);
           auto ringtone_string = id(ringtone_select).state.c_str();

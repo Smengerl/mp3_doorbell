@@ -7,8 +7,8 @@ An ESP32 based doorbell for use with home assistant with the doorbell sound of y
 - can be used as audio output device for any automation in home assistant - not limited to doorbell usecase
 - provide your own sounds via MP3 SD card
 - support for doorbell light including light effects when ringing  
-- Integrated into home assistant via ESP home so that you can use the doorbell to trigger subsequent actions and automations 
-- low cost hardware <10 USD
+- State and events exposed in home assistant via ESP home so that you can use the doorbell to trigger subsequent actions and automations 
+- low cost hardware of about 10 USD
 - optional 5V power supply including double USB C port
 - Example code provided (e.g. trigger camera snapshot)
 
@@ -88,20 +88,22 @@ Fit the cases to the DIN rail and fix them inserting the hook.
 ### Part list
 
 ESP doorbell:
-| Name                         | Required          | Note      |
-| ---------------------------- | ----------------- | --------- |
-| ESP32 WROOM USB-C Dev Module | 1                 |           |
-| DF Player mini               | 1                 |           |
-| Screw Terminals              | 2 x 6             | 5mm       |
-| micro SD card                | 1                 | to Hold MP3 files. Check DF player specs to pick the right card, e.g. max capacity |
-| 8 Ohm Speaker                | 1                 |           |
-| Doorbell button              | 1                 | consider using button including 5V LED lighting |
+| Name                         | Required             | Note      |
+| ---------------------------- | -------------------- | --------- |
+| ESP32 Dev Module             | 1                    | Case designed for WROOM USB-C type |
+| DF Player mini               | 1                    |           |
+| Screw Terminals              | 2 x 6 terminals each | 5mm pitch |
+| micro SD card                | 1                    | to Hold MP3 files. Check DF player specs to pick the right card, e.g. max capacity |
+| 8 Ohm Speaker                | 1                    |           |
+| Doorbell button              | 1                    | consider using button including 5V LED lighting |
 
 
 5V power supply:
-| Screw Terminals              | 2 x 2             | 5mm       |
-| 5V power supply              | 1                 |           |
-| USB connector                | 2                 |           |
+| Name                         | Required             | Note      |
+| ---------------------------- | -------------------- | --------- |
+| Screw Terminals              | 2 x 2 terminals each | 5mm pitch |
+| 5V power supply              | 1                    |           |
+| USB connector                | 2                    |           |
 
 
 
@@ -184,9 +186,9 @@ Example automation that uses this prompt and embedds it into a fully automated f
   triggers:
   - trigger: state
     entity_id:
-    - binary_sensor.doorbell_sound_doorbell
-    from: 'off'
-    to: 'on'
+      - event.doorbell_sound_doorbell_button
+    attribute: event_type
+    to: button_pressed
   conditions: []
   actions:
   - metadata: {}
