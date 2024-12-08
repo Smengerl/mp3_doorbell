@@ -1,4 +1,13 @@
 substitutions:
+  name: doorbell-sound
+  friendly_name: Doorbell
+  comment: MP3 Doorbell with HA integration
+
+  TAG: "doorbell-sound.yaml"
+
+
+
+
   # GPIO Pins
   pin_dfPlayer_tx: GPIO26 # TX Leitung am ESP. entspr. Pin 15 am ESP. Lila Leitung. Geht auf Pin 2 (RX) am DF Player
   pin_dfPlayer_rx: GPIO27 # RX Leitung am ESP. entspr. Pin 16 am ESP. Graue Leitung. Geht auf Pin 3 (TX) am DF Player
@@ -18,11 +27,16 @@ substitutions:
   max_brightness: 100%
 
 
+packages:
+  debug_basics: !include shared_packages/debug_basics.yaml
+#  deep_sleep:  !include shared_packages/deep_sleep.yaml
+
+
 
 esphome:
-  name: doorbell-sound
-  friendly_name: Doorbell
-  comment: MP3 Doorbell with HA integration
+  name: ${name}
+  friendly_name: ${friendly_name}
+  comment: ${comment}
   compile_process_limit: 1
 
 esp32:
@@ -129,7 +143,7 @@ event:
     on_event:
       then:
         - lambda: |-
-            ESP_LOGD("epaper-display.yaml", "Doorbell button pressed event %s triggered.", event_type.c_str());
+            ESP_LOGD("${TAG}", "Doorbell button pressed event %s triggered.", event_type.c_str());
 
 
 # button to test the doorbell
@@ -141,14 +155,6 @@ button:
     on_press:
       then:
         - script.execute: trigger_doorbell
-
-  - platform: shutdown
-    entity_category: diagnostic
-    name: "Shutdown"
-  - platform: restart
-    entity_category: diagnostic
-    name: "Restart"
-
     
 
 number:
@@ -245,7 +251,7 @@ select:
     on_value:
       then:
         - lambda: |-
-            ESP_LOGI("doorbell.yaml", "Doorbell ringtone changed! (Ringtone %03d.mp3: %s)", i, x.c_str());
+            ESP_LOGI("${TAG}", "Doorbell ringtone changed! (Ringtone %03d.mp3: %s)", i, x.c_str());
 
 
 
@@ -285,41 +291,6 @@ binary_sensor:
       - script.execute: trigger_doorbell
 
 
-sensor:
-# DIAGNOSTIC VALUES ****************************************************************
-  - platform: wifi_signal
-    name: "WiFi Signal"
-    id: wifi_signal_db
-    update_interval: 60s
-    entity_category: diagnostic
-    internal: true
-
-  - platform: copy # Reports the WiFi signal strength in %
-    source_id: wifi_signal_db
-    name: "WiFi Strength"
-    filters:
-      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
-    unit_of_measurement: "%"
-    entity_category: diagnostic
-# END DIAGNOSTIC VALUES ****************************************************************
-
-
-
-text_sensor:
-# DIAGNOSTIC VALUES ****************************************************************
-  - platform: wifi_info
-    ip_address:
-      name: "IP Address"
-      entity_category: diagnostic
-    ssid:
-      name: "Connected SSID"
-      entity_category: diagnostic
-    mac_address:
-      name: "Mac Address"
-      entity_category: diagnostic
-# END DIAGNOSTIC VALUES ****************************************************************
-
-
 
 script:
   - id: trigger_doorbell
@@ -337,10 +308,10 @@ script:
           int ringtone;
           if (ringtone_index.has_value()) {
             ringtone = ringtone_index.value() + 1;
-            ESP_LOGI("doorbell.yaml", "Doorbell triggered! (Volume %d/30; Ringtone %03d.mp3: %s)", volume, ringtone, ringtone_string);
+            ESP_LOGI("${TAG}", "Doorbell triggered! (Volume %d/30; Ringtone %03d.mp3: %s)", volume, ringtone, ringtone_string);
           } else {
             ringtone = ${default_sound_index};
-            ESP_LOGW("doorbell.yaml", "Doorbell triggered but cannot determin selected ringtone. Will use default");
+            ESP_LOGW("${TAG}", "Doorbell triggered but cannot determin selected ringtone. Will use default");
           }
           id(df_player).play_file(ringtone);
       - light.turn_on: onboard_led
