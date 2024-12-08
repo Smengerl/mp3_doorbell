@@ -9,15 +9,15 @@ substitutions:
 
 
   # GPIO Pins
-  pin_dfPlayer_tx: GPIO26 # TX Leitung am ESP. entspr. Pin 15 am ESP. Lila Leitung. Geht auf Pin 2 (RX) am DF Player
-  pin_dfPlayer_rx: GPIO27 # RX Leitung am ESP. entspr. Pin 16 am ESP. Graue Leitung. Geht auf Pin 3 (TX) am DF Player
-  pin_doorbell_switch: GPIO33 # Taster Türklingel (gegen Masse)
-  pin_doorbell_light: GPIO32 # Beleuchtung Türklingel (gegen Masse)
+  pin_dfPlayer_tx: GPIO26 # ESP TX (Pin 15) --> DF Player RX (Pin 2), purple wire
+  pin_dfPlayer_rx: GPIO27 # ESP RX (Pin 16) --> DF Player TX (Pin 3), gray wire
+  pin_doorbell_switch: GPIO33 # Doorbell button (to ground)
+  pin_doorbell_light: GPIO32 # Doorbell light (to ground)
 
   # Default Settings
-  default_sound: "005 melodic classic doorbell" # Initialwert für Melodie
-  default_sound_index: "5" # Index for default value
-  default_volume: '30' # initialwert für Lautstärke (von 0...30)
+  default_sound: "005 melodic classic doorbell" # initial value for doorbell sound
+  default_sound_index: "5" # Index for default doorbell sound
+  default_volume: '30' # Default volume (in range 0...30)
 
   # LED Effects
   fast_pulse_effect_name: "Fast Pulse"
@@ -56,8 +56,6 @@ ota:
     password: "3f6786b29f445e0ac078c0bfec10c81d"
 
 wifi:
-#  use_address: esphome-web-38fec0.local # Manually point to old name in order to be able to rename
-
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
@@ -95,26 +93,6 @@ uart:
   rx_pin: ${pin_dfPlayer_rx}
   baud_rate: 9600
 
-dfplayer:
-  id: df_player
-  on_finished_playback:
-    then:
-      - lambda: |-
-          ESP_LOGW("doorbell.yaml", "Doorbell playback finished!");
-      - light.turn_off: onboard_led
-      - if:
-          condition:
-            lambda: |-
-              return id(doorbell_led).state;
-          then:
-            - light.turn_on:
-                id: doorbell_led_internal
-                effect: "None"
-          else:
-            - light.turn_off:
-                id: doorbell_led_internal
-
-
 # Switch to set lighting of doorbell (e.g. during night)
 switch:
   - platform: template
@@ -137,13 +115,12 @@ event:
     name: Doorbell button
     id: doorbell_event
     device_class: doorbell
-    # icon: "mdi:doorbell"
     event_types: 
       - button_pressed
     on_event:
       then:
         - lambda: |-
-            ESP_LOGD("${TAG}", "Doorbell button pressed event %s triggered.", event_type.c_str());
+            ESP_LOGI("${TAG}", "Doorbell button pressed event %s triggered.", event_type.c_str());
 
 
 # button to test the doorbell
@@ -281,9 +258,9 @@ binary_sensor:
       number: ${pin_doorbell_switch}
       mode:
         input: true
-        # Schalter zieht gegen Masse. Pull up muss eingeschaltet sein. 
+        # contacts to ground so activate pull up 
         pullup: true
-      # Taster gedrückt schaltet gegen Masse und ist daher low - durch invertieren geht Sensor auf High bei Druck auf Türklingel
+      # When button is pressed, signal is low - need to invert so that sensor is high when doorbell button is pressed
       inverted: true 
     filters:
       - delayed_on: 10ms # debounce
@@ -292,15 +269,25 @@ binary_sensor:
 
 
 
+
+#-------------------------------------------
+# Built in doorbell functionality
+#-------------------------------------------
+
 script:
   - id: trigger_doorbell
     then:
+      - script.stop: df_player_watchdog 
+      - script.execute: df_player_watchdog # Stop and restart watchdog
+
+#      - dfplayer.set_device: TF_CARD # Makes sure that the DF player is awake
+#      - delay: 1000ms # some delay to make sure the df player has processed previous command
       - lambda: |-
           id(doorbell_event).trigger("button_pressed");
 
           int volume = (int)(id(var_volume).state);
           id(df_player).set_volume(volume);
-      - delay: 150ms # some delay to m ake sure the df player has processed previous command
+      - delay: 150ms # some delay to make sure the df player has processed previous command
       - lambda: |-
           int volume = (int)(id(var_volume).state);
           auto ringtone_string = id(ringtone_select).state.c_str();
@@ -319,6 +306,43 @@ script:
           effect: ${fast_pulse_effect_name}
           id: doorbell_led_internal
 
+  # Timeout check script
+  - id: df_player_watchdog
+    then:
+      - lambda: |-
+          ESP_LOGI("${TAG}", "DF Player watchdog started");
+
+      - delay: 2min
+
+      - lambda: |-
+          ESP_LOGW("${TAG}", "DF Player watchdog fired, reseting device");
+      - dfplayer.reset # Reset DF player if it is still playing after 2min
+
+
+dfplayer:
+  id: df_player
+  on_finished_playback:
+    then:
+      - script.stop: df_player_watchdog # Stop watchdog
+      - lambda: |-
+          ESP_LOGW("${TAG}", "Doorbell playback finished!");
+      - light.turn_off: onboard_led
+      - if:
+          condition:
+            lambda: |-
+              return id(doorbell_led).state;
+          then:
+            - light.turn_on:
+                id: doorbell_led_internal
+                effect: "None"
+          else:
+            - light.turn_off:
+                id: doorbell_led_internal
+#      - dfplayer.sleep # Aggresive sleep mode
+
+
+
+
 
 
 #-------------------------------------------
@@ -331,22 +355,26 @@ api:
     key: "Tl2rJtTss0xoQ792MStUvP3Lopg0qZX50jRWxrQ8y3E="
 
   actions:
-  - action: dfplayer_next
-    then:
-      - dfplayer.play_next:
-  - action: dfplayer_previous
-    then:
-      - dfplayer.play_previous:
+#  - action: dfplayer_next
+#    then:
+#      - dfplayer.set_device: TF_CARD
+#      - dfplayer.play_next:
+#  - action: dfplayer_previous
+#    then:
+#      - dfplayer.set_device: TF_CARD
+#      - dfplayer.play_previous:
   - action: dfplayer_play
     variables:
       file: int
     then:
+#      - dfplayer.set_device: TF_CARD
       - dfplayer.play: !lambda 'return file;'
   - action: dfplayer_play_loop
     variables:
       file: int
       loop_: bool
     then:
+#      - dfplayer.set_device: TF_CARD
       - dfplayer.play:
           file: !lambda 'return file;'
           loop: !lambda 'return loop_;'
@@ -355,6 +383,7 @@ api:
       folder: int
       file: int
     then:
+#      - dfplayer.set_device: TF_CARD
       - dfplayer.play_folder:
           folder: !lambda 'return folder;'
           file: !lambda 'return file;'
@@ -363,39 +392,41 @@ api:
     variables:
       folder: int
     then:
+#      - dfplayer.set_device: TF_CARD
       - dfplayer.play_folder:
           folder: !lambda 'return folder;'
           loop: true
 
-  - action: dfplayer_set_device_tf
-    then:
-      - dfplayer.set_device: TF_CARD
+#  - action: dfplayer_set_device_tf
+#    then:
+#      - dfplayer.set_device: TF_CARD
 
-  - action: dfplayer_set_device_usb
-    then:
-      - dfplayer.set_device: USB
+#  - action: dfplayer_set_device_usb
+#    then:
+#      - dfplayer.set_device: USB
 
   - action: dfplayer_set_volume
     variables:
       volume: int
     then:
       - dfplayer.set_volume: !lambda 'return volume;'
-  - action: dfplayer_set_eq
-    variables:
-      preset: int
-    then:
-      - dfplayer.set_eq: !lambda 'return static_cast<dfplayer::EqPreset>(preset);'
+#  - action: dfplayer_set_eq
+#    variables: # Valid values are NORMAL, POP, ROCK, JAZZ, CLASSIC and BASS.
+#      preset: int
+#    then:
+#      - dfplayer.set_eq: !lambda 'return static_cast<dfplayer::EqPreset>(preset);'
 
-  - action: dfplayer_sleep
-    then:
-      - dfplayer.sleep
+#  - action: dfplayer_sleep
+#    then:
+#      - dfplayer.sleep
 
-  - action: dfplayer_reset
-    then:
-      - dfplayer.reset
+#  - action: dfplayer_reset
+#    then:
+#      - dfplayer.reset
 
   - action: dfplayer_start
     then:
+#      - dfplayer.set_device: TF_CARD
       - dfplayer.start
 
   - action: dfplayer_pause
@@ -406,14 +437,14 @@ api:
     then:
       - dfplayer.stop
 
-  - action: dfplayer_random
-    then:
-      - dfplayer.random
+#  - action: dfplayer_random
+#    then:
+#      - dfplayer.random
 
-  - action: dfplayer_volume_up
-    then:
-      - dfplayer.volume_up
+#  - action: dfplayer_volume_up
+#    then:
+#      - dfplayer.volume_up
 
-  - action: dfplayer_volume_down
-    then:
-      - dfplayer.volume_down
+#  - action: dfplayer_volume_down
+#    then:
+#      - dfplayer.volume_down

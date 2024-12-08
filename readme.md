@@ -149,7 +149,9 @@ Features
 - Test buttons and diagnosis signals provided to HA GUI
 - Full DF player API provided to HA for use in automations
 
-You can find the YAML source code for home assistant in `./esphome_src/doorbell-sound.yaml`
+You can find the YAML source code for home assistant in `./esphome_src/`
+- `./esphome_src/doorbell-sound.yaml` main file for ESP home configuration, contains the relevant source code, imports all following packages
+- `./esphome_src/shared_packages/debug_basics.yaml` Adds debug releated entities (optional), generic - not limited to use in this project
 
 
 
@@ -183,84 +185,83 @@ Please tell me if there is no one but there is a parcel or other item that they 
 
 Example automation that uses this prompt and embedds it into a fully automated flow triggered when the doorbell is rung:
 ```yaml
-  triggers:
-  - trigger: state
-    entity_id:
-      - event.doorbell_sound_doorbell_button
-    attribute: event_type
-    to: button_pressed
-  conditions: []
-  actions:
-  - metadata: {}
-    data: {}
-    target:
-      entity_id: camera.camera_frontdoor
-    action: camera.turn_on
-  - data:
-      filename: '{{ snapshot_create_file_path }}'
-    enabled: true
-    target:
-      entity_id: camera.camera_frontdoor
-    action: camera.snapshot
-  - metadata: {}
-    data:
-      notify_devices:
-      - YOURDEVICEID
-      notify_home_or_away: Both
-      data_notification_icon: mdi:doorbell
-      notify_title: Türklingel {{ time }}
-      notify_message: Please wait for Gemini to interpret the image
-      data_visibility: public
-      data_ios_interruption_level: time-sensitive
-      notify_tts_in_car: true
-      data_tag: '{{this.context.id}}'
-      data_camera: '{{ snapshot_access_file_path }}'
-    action: script.notify_devices
-  - parallel:
-    - choose: []
-      default:
-      - entity_id: camera.camera_frontdoor
-        data:
-          filename: /media/frontdoor_camera/archive/motion_{{now().strftime("%Y%m%d-%H%M%S")}}.jpg
-        enabled: true
-        action: camera.snapshot
-      - entity_id: camera.camera_frontdoor
-        data:
-          filename: /media/frontdoor_camera/last_motion.jpg
-        action: camera.snapshot
-    - choose: []
-      default:
-      - data:
-          prompt: "YOUR PROMPT HERE"
-          image_filename: '{{ snapshot_create_file_path }}'
-        response_variable: generated_content
-        action: google_generative_ai_conversation.generate_content
-      - metadata: {}
-        data:
-          notify_devices:
-          - YOURDEVICEID
-          notify_home_or_away: Both
-          data_notification_icon: mdi:doorbell
-          notify_title: Doorbell {{ time }}
-          notify_message: '{{ generated_content.text }}'
-          data_visibility: public
-          data_ios_interruption_level: time-sensitive
-          notify_tts_in_car: true
-          data_tag: '{{this.context.id}}'
-          data_camera: '{{ snapshot_access_file_path }}'
-        action: script.notify_devices
-  variables:
-    generated_content: undefined
-    camera: camera.camera_frontdoor
-    camera_name: '{{ states[camera].name }}'
-    time: '{{ now().strftime("%H:%M") }}'
-    date: '{{ now().strftime("%Y-%m-%d") }}'
-    snapshot_create_file_path: /config/www/tmp/snapshot_{{ states[camera].object_id}}.jpg
-    snapshot_access_file_path: '{{ snapshot_create_file_path | replace(''/config/www'',''/local'')}}'
-  mode: parallel
-  max: 10
+triggers:
+- trigger: state
+  entity_id:
+    - event.doorbell_sound_doorbell_button
+  attribute: event_type
+  to: button_pressed
+conditions: []
+actions:
+- metadata: {}
+  data: {}
+  target:
+    entity_id: camera.camera_frontdoor
+  action: camera.turn_on
+- data:
+    filename: '{{ snapshot_create_file_path }}'
+  enabled: true
+  target:
+    entity_id: camera.camera_frontdoor
+  action: camera.snapshot
+- metadata: {}
+  data:
+    notify_devices:
+    - YOURDEVICEID
+    notify_home_or_away: Both
+    data_notification_icon: mdi:doorbell
+    notify_title: Doorbell {{ time }}
+    notify_message: Please wait for Gemini to interpret the image
+    data_visibility: public
+    data_ios_interruption_level: time-sensitive
+    data_tag: '{{this.context.id}}'
+    data_camera: '{{ snapshot_access_file_path }}'
+  action: script.notify_devices
+- parallel:
+  - choose: []
+    default:
+    - entity_id: camera.camera_frontdoor
+      data:
+        filename: /media/frontdoor_camera/archive/motion_{{now().strftime("%Y%m%d-%H%M%S")}}.jpg
+      enabled: true
+      action: camera.snapshot
+    - entity_id: camera.camera_frontdoor
+      data:
+        filename: /media/frontdoor_camera/last_motion.jpg
+      action: camera.snapshot
+  - choose: []
+    default:
+    - data:
+        prompt: "YOUR PROMPT HERE"
+        image_filename: '{{ snapshot_create_file_path }}'
+      response_variable: generated_content
+      action: google_generative_ai_conversation.generate_content
+    - metadata: {}
+      data:
+        notify_devices:
+        - YOURDEVICEID
+        notify_home_or_away: Both
+        data_notification_icon: mdi:doorbell
+        notify_title: Doorbell {{ time }}
+        notify_message: '{{ generated_content.text }}'
+        data_visibility: public
+        data_ios_interruption_level: time-sensitive
+        notify_tts_in_car: true
+        data_tag: '{{this.context.id}}'
+        data_camera: '{{ snapshot_access_file_path }}'
+      action: script.notify_devices
+variables:
+  generated_content: undefined
+  camera: camera.camera_frontdoor
+  camera_name: '{{ states[camera].name }}'
+  time: '{{ now().strftime("%H:%M") }}'
+  date: '{{ now().strftime("%Y-%m-%d") }}'
+  snapshot_create_file_path: /config/www/tmp/snapshot_{{ states[camera].object_id}}.jpg
+  snapshot_access_file_path: '{{ snapshot_create_file_path | replace(''/config/www'',''/local'')}}'
+mode: parallel
+max: 10
 ```
-Note that his usees helper scripts not shown here to create and uptate push notification to mobile devices)
+Note that his uses helper scripts not shown here to create and uptate push notification to mobile devices
 
 
 
