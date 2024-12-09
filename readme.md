@@ -144,14 +144,18 @@ The YAML provided as ESP home integration already includes this doorbell usecase
 If you don't need this, just strip down the code to make it become a generic device to play MP3 files triggered by home assistant. 
 
 Features
-- Doorbell usecase implemented without any HA interaction
+- Fully functional doorbell not requiring any interaction with home assistant (robustnes, latency)
+- Exposes doorbell to home assistant so you can use it to trigger automations 
 - Configurable volume and doorbell sound via HA GUI
 - Test buttons and diagnosis signals provided to HA GUI
-- Full DF player API provided to HA for use in automations
+- DF player API provided to HA for even more flexible use in automations
+- As my DF player sometimes "hangs" and playback is never ended automatically blocking further calls, a watchdog is used which resets DF player 2min after the doorbell was triggered if it is still playing 
+- Although the original DF player supports sleep mode and it could be used to save power in the doorbell usecase, I disabled this feature in code as I found waking up from sleep doesn't work reliably for most DF players sold these days. You can uncomment the corresponding lines in code if you want to try this out for your player
 
 You can find the YAML source code for home assistant in `./esphome_src/`
 - `./esphome_src/doorbell-sound.yaml` main file for ESP home configuration, contains the relevant source code, imports all following packages
 - `./esphome_src/shared_packages/debug_basics.yaml` Adds debug releated entities (optional), generic - not limited to use in this project
+
 
 
 
