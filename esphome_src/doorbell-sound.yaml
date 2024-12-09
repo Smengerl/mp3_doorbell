@@ -273,73 +273,73 @@ binary_sensor:
 #-------------------------------------------
 # Built in doorbell functionality
 #-------------------------------------------
-
 script:
   - id: trigger_doorbell
     then:
-      - script.stop: df_player_watchdog 
-      - script.execute: df_player_watchdog # Stop and restart watchdog
-
-#      - dfplayer.set_device: TF_CARD # Makes sure that the DF player is awake
-#      - delay: 1000ms # some delay to make sure the df player has processed previous command
       - lambda: |-
+          // Stop and restart the watchdog
+          id(df_player_watchdog).stop();
+          id(df_player_watchdog).execute();
+
+          // Handle playback status
+          if (id(df_player).is_playing()) {
+            ESP_LOGW("doorbell", "Playback was active when doorbell triggered. Might be due to an error.");
+            // id(df_player).reset();
+            // esphome::delay(1500); // Allow the DFPlayer to reset
+          }
+
+          // Trigger the doorbell event
           id(doorbell_event).trigger("button_pressed");
 
+          // Set the volume
           int volume = (int)(id(var_volume).state);
           id(df_player).set_volume(volume);
-      - delay: 150ms # some delay to make sure the df player has processed previous command
-      - lambda: |-
-          int volume = (int)(id(var_volume).state);
+
+          // Play the selected ringtone
+          esphome::delay(150); // Allow DFPlayer to process
           auto ringtone_string = id(ringtone_select).state.c_str();
           auto ringtone_index = id(ringtone_select).active_index();
           int ringtone;
           if (ringtone_index.has_value()) {
             ringtone = ringtone_index.value() + 1;
-            ESP_LOGI("${TAG}", "Doorbell triggered! (Volume %d/30; Ringtone %03d.mp3: %s)", volume, ringtone, ringtone_string);
+            ESP_LOGI("doorbell", "Doorbell triggered! (Volume: %d/30; Ringtone: %03d.mp3: %s)", volume, ringtone, ringtone_string);
           } else {
             ringtone = ${default_sound_index};
-            ESP_LOGW("${TAG}", "Doorbell triggered but cannot determin selected ringtone. Will use default");
+            ESP_LOGW("doorbell", "Cannot determine selected ringtone. Using default.");
           }
           id(df_player).play_file(ringtone);
-      - light.turn_on: onboard_led
-      - light.turn_on:
-          effect: ${fast_pulse_effect_name}
-          id: doorbell_led_internal
 
-  # Timeout check script
+          // Turn on LED effects
+          id(onboard_led).turn_on().perform();
+          id(doorbell_led_internal).turn_on().set_effect("${fast_pulse_effect_name}").perform();
+
+  # Watchdog to reset player if still playing after 2min
   - id: df_player_watchdog
     then:
       - lambda: |-
           ESP_LOGI("${TAG}", "DF Player watchdog started");
-
-      - delay: 2min
-
+      - delay: 2min # use yaml syntax as no easy way to wait in a non-blocking way in lambdas
       - lambda: |-
+          // esphome::delay(120000); // Wait max 2min
           ESP_LOGW("${TAG}", "DF Player watchdog fired, reseting device");
-      - dfplayer.reset # Reset DF player if it is still playing after 2min
+          id(df_player).reset(); // Reset DF player if it is still playing after 2min
 
-
+# Stop light effect on doorbell, sitch off the control LEDs and stop watchdog when playing has finished
 dfplayer:
   id: df_player
   on_finished_playback:
     then:
-      - script.stop: df_player_watchdog # Stop watchdog
       - lambda: |-
-          ESP_LOGW("${TAG}", "Doorbell playback finished!");
-      - light.turn_off: onboard_led
-      - if:
-          condition:
-            lambda: |-
-              return id(doorbell_led).state;
-          then:
-            - light.turn_on:
-                id: doorbell_led_internal
-                effect: "None"
-          else:
-            - light.turn_off:
-                id: doorbell_led_internal
-#      - dfplayer.sleep # Aggresive sleep mode
+          id(df_player_watchdog).stop(); // stop watchdog
 
+          ESP_LOGI("${TAG}", "Doorbell playback finished!");
+          id(onboard_led).turn_off().perform();
+          if (id(doorbell_led).state) { // Restore doorbell LED to configured state 
+            id(doorbell_led_internal).turn_on().set_effect("None").perform();
+          } else {
+            id(doorbell_led_internal).turn_off().perform();
+          }
+          // dfplayer.sleep // Aggresive sleep mode
 
 
 
