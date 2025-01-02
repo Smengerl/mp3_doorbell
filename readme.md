@@ -111,6 +111,9 @@ ESP doorbell:
 
 The wiring in the case is pretty much self explanatory and you can use the screw terminals according to your needs.
 
+<img src="./schematics/schematics.jpg" alt="schematics"/>
+
+
 
 If you want to use the same screw terminal connections I used, then please take a look at the labeling models and what they tell which screw terminal is used for which purpose. 
 
