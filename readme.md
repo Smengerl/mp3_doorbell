@@ -76,11 +76,9 @@ Optional: separate 5V power supply:
 
 ## Assembly
 
-Use hotglue to hold all electronic components in place within the housing (screw terminals, ESP32 and RF player).
-
-Screw the side wall to the base of the case via the M4 screws.
-
-Fit the cases to the DIN rail and fix them inserting the hook.
+- Use hotglue to hold all electronic components in place within the housing (screw terminals, ESP32 and RF player).
+- Screw the side wall to the base of the case via the M4 screws.
+- Fit the cases to the DIN rail and fix them inserting the hook.
 
 
 ## Electronics
