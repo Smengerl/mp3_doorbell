@@ -36,20 +36,20 @@ If you have two color print capability, you can optionally print labels for the 
 ESP doorbell:
 | Filename                     | Thumbnail                                                           | Required |
 | ---------------------------- | --------------------------------------------------------------------| -------- |
-| `./print/case.stl`           | <img src="./print/rendering/case.png" alt="frame" width="300"/>     | 1        |
-| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall"/>         | 1        |
-| `./print/hook.stl`           | <img src="./print/rendering/hook.png" alt="hook"/>                  | 1        |
-| `./print/label.stl`          | <img src="./print/rendering/label.png" alt="label"/>                | optional |
-| `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" alt="label_top"/>        | optional |
-| `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" alt="label_bottom"/>  | optional |
+| `./print/case.stl`           | <img src="./print/rendering/case.png" alt="frame" width="300"/>                 | 1        |
+| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall" width="300"/>         | 1        |
+| `./print/hook.stl`           | <img src="./print/rendering/hook.png" alt="hook" width="300"/>                  | 1        |
+| `./print/label.stl`          | <img src="./print/rendering/label.png" alt="label" width="300"/>                | optional |
+| `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" alt="label_top" width="300"/>        | optional |
+| `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" alt="label_bottom" width="300"/>  | optional |
 
 
 
 Optional: separate 5V power supply:
 | Filename                     | Thumbnail                                                           | Required |
 | ---------------------------- | --------------------------------------------------------------------| -------- |
-| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall"/>         | 1        |
-| `./print/power_supply.stl`   | <img src="./print/rendering/power_supply.png" alt="pwoer_supply"/>  | 1        |
+| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall" width="300"/>         | 1        |
+| `./print/power_supply.stl`   | <img src="./print/rendering/power_supply.png" alt="pwoer_supply" width="300"/>  | 1        |
 
 
 
