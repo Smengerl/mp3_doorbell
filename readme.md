@@ -18,6 +18,16 @@ An ESP32 based doorbell for use with home assistant with the doorbell sound of y
 | ![rendering_doorbell_case](./print/rendering/rendering_doorbell_case.png)  | ![rendering_power_supply](./print/rendering/rendering_power_supply.png) |
 
 
+# Index
+- [Mechanics](#Mechanics)
+- [Electronics](#Electronics)
+- [Usage: MP3 doorbell](#mp3_doorbell)
+- [Usage: Camera snapshot](#camera_snapshot)
+- [Usage: Home Reminder](#home_reminder)
+- [Acknowledgements](#Acknowledgements)
+
+
+ 
 
 
 ## Mechanics
@@ -133,13 +143,13 @@ All external connection are done via the screw connectors:
 - Optionally, an LED can be attached via GPIO output connected to ground, e.g. to light up the bell button at night. Please note that this is directly connected to GPIO of the ESP, so don't draw too much current (should be sufficient for up to 4 standard LEDs though)!
 
 
-# Example usages 
+## Usage
 
 Adopting the ESP as device to home assistant via ESP home allows for flexible usage for different scenarios for which the following chapter illustrates some examples.
 
 
 
-## MP3 doorbell
+### MP3 doorbell
 
 The YAML provided as ESP home integration already includes this doorbell usecase "hardcoded" for robustnes reasons as it does not require an automation in HA and no signals need to be send to home assistant back and forth
 If you don't need this, just strip down the code to make it become a generic device to play MP3 files triggered by home assistant. 
@@ -166,7 +176,7 @@ It is also noteworthy that DF player plays the MP3 files on the SD card by the o
 
 Tip: Consider seasonal modes such as special Halloween sounds for your doorbell
 
-## Camera snapshot
+### Camera snapshot
 
 As the doorbell exposes the doorbell button as entity in HA, you can use a change to this entity state to trigger automations.
 This can be anything, e.g. switching the light on at the door when its dark.
@@ -270,7 +280,7 @@ Note that his uses helper scripts not shown here to create and uptate push notif
 
 
 
-## Home Reminder
+### Home Reminder
 
 As the doorbell provides an API with full control of the DF player, you can use this to play sounds on certain triggers via automations.
 An example would be, to play a sound to not forget to switch off the lights when leaving home (e.g. when your front door contact is triggered).
@@ -297,3 +307,6 @@ data:
 mode: single
 ```
 
+## Acknowledgements
+home assistant
+ESP home
