@@ -74,7 +74,7 @@ Optional: separate 5V power supply:
 | Countersunk screw | M4 6mm  | 6        |
 
 
-## Assembly
+### Assembly
 
 - Use hotglue to hold all electronic components in place within the housing (screw terminals, ESP32 and RF player).
 - Screw the side wall to the base of the case via the M4 screws.
@@ -86,22 +86,22 @@ Optional: separate 5V power supply:
 ### Part list
 
 ESP doorbell:
-| Name                         | Required             | Note      |
-| ---------------------------- | -------------------- | --------- |
-| ESP32 Dev Module             | 1                    | Case designed for WROOM USB-C type |
-| DF Player mini               | 1                    |           |
-| Screw Terminals              | 2 x 6 terminals each | 5mm pitch |
-| micro SD card                | 1                    | to Hold MP3 files. Check DF player specs to pick the right card, e.g. max capacity |
-| 8 Ohm Speaker                | 1                    |           |
-| Doorbell button              | 1                    | consider using button including 5V LED lighting |
+| Unit price | Quantity | Partname | Example | Notes |
+| ---------- | -------- | -------- | ------- | ----- |
+| 5 USD | 1 | ESP32 Dev Module | <a href="https://de.aliexpress.com/item/1005006336964908.html">AliExpress</a> | Case designed for WROOM USB-C type |
+| 2 USD | 1 | DF Player mini | <a href="https://de.aliexpress.com/item/1005006263283726.html">AliExpress</a> | |
+| 1 USD | 2 | 6 pin screw terminal | <a href="https://de.aliexpress.com/item/1005006642865467.html">AliExpress</a> | 5mm pitch |
+| 3 USD | 1 | micro SD card | | to Hold MP3 files. Check DF player specs to pick the right card, e.g. max capacity |
+| use your home installation | 1 | 8 Ohm Speaker | dismantle this one from <a href="https://de.aliexpress.com/item/33042023659.html?spm=a2g0o.order_list.order_list_main.478.499c5c5f3pOQDE&gatewayAdapt=glo2deu">AliExpress</a> |
+| use your home installation | 1 | Doorbell button | <a href="https://de.aliexpress.com/item/1005004920346156.html">AliExpress</a> | consider using button including 5V LED lighting |
 
 
 5V power supply:
-| Name                         | Required             | Note      |
-| ---------------------------- | -------------------- | --------- |
-| Screw Terminals              | 2 x 2 terminals each | 5mm pitch |
-| 5V power supply              | 1                    |           |
-| USB connector                | 2                    |           |
+| Unit price | Quantity | Partname | Example | Notes |
+| ---------- | -------- | -------- | ------- | ----- |
+| 1 USD | 2 | 2 pin screw terminal | <a href="https://de.aliexpress.com/item/1005006642865467.html">AliExpress</a> | 5mm pitch |
+| 2 USD | 1 | 5V power supply | <a href="https://de.aliexpress.com/item/1005005021311232.html">AliExpress</a> |  |
+| 1 USD | 2 | USB connector | <a href="https://de.aliexpress.com/item/1005005776162012.html">AliExpress</a> |  |
 
 
 
