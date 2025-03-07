@@ -21,9 +21,9 @@ An ESP32 based doorbell for use with home assistant with the doorbell sound of y
 # Index
 - [Mechanics](#Mechanics)
 - [Electronics](#Electronics)
-- [Usage: MP3 doorbell](#mp3_doorbell)
-- [Usage: Camera snapshot](#camera_snapshot)
-- [Usage: Home Reminder](#home_reminder)
+- [Usage: MP3 doorbell](#mp3-doorbell)
+- [Usage: Camera snapshot](#camera-snapshot)
+- [Usage: Home Reminder](#home-reminder)
 - [Acknowledgements](#Acknowledgements)
 
 
