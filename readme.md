@@ -308,5 +308,5 @@ mode: single
 ```
 
 ## Acknowledgements
-home assistant
-ESP home
+- home assistant 
+- ESP home
