@@ -5,7 +5,7 @@ An ESP32 based doorbell for use with home assistant with the doorbell sound of y
 - A robust 3D printed structure for mounting on a DIN rail
 - fully functional doorbell running independent from home assistant
 - can be used as audio output device for any automation in home assistant - not limited to doorbell usecase
-- provide your own sounds via MP3 SD card
+- provide your own sounds via MP3 SD card or via network player 
 - support for doorbell light including light effects when ringing  
 - State and events exposed in home assistant via ESP home so that you can use the doorbell to trigger subsequent actions and automations 
 - low cost hardware of about 10 USD
@@ -47,6 +47,7 @@ ESP doorbell:
 | Filename                     | Thumbnail                                                           | Required |
 | ---------------------------- | --------------------------------------------------------------------| -------- |
 | `./print/case.stl`           | <img src="./print/rendering/case.png" alt="frame" width="300"/>                 | 1        |
+| `./print/case_no_sd.stl`           | <img src="./print/rendering/case_no_sd.png" alt="frame" width="300"/>                 | 1 (alternative the variant with SD card) |
 | `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall" width="300"/>         | 1        |
 | `./print/hook.stl`           | <img src="./print/rendering/hook.png" alt="hook" width="300"/>                  | 1        |
 | `./print/label.stl`          | <img src="./print/rendering/label.png" alt="label" width="300"/>                | optional |
@@ -95,13 +96,23 @@ Optional: separate 5V power supply:
 
 ### Part list
 
-ESP doorbell:
+ESP doorbell with onboard SD card:
 | Unit price | Quantity | Partname | Example | Notes |
 | ---------- | -------- | -------- | ------- | ----- |
 | 5 USD | 1 | ESP32 Dev Module | <a href="https://de.aliexpress.com/item/1005006336964908.html">AliExpress</a> | Case designed for WROOM USB-C type |
-| 2 USD | 1 | DF Player mini | <a href="https://de.aliexpress.com/item/1005006263283726.html">AliExpress</a> | |
+| 2 USD | 1 | DF Player mini | <a href="https://de.aliexpress.com/item/1005006263283726.html">AliExpress</a> |  |
 | 1 USD | 2 | 6 pin screw terminal | <a href="https://de.aliexpress.com/item/1005006642865467.html">AliExpress</a> | 5mm pitch |
-| 3 USD | 1 | micro SD card | | to Hold MP3 files. Check DF player specs to pick the right card, e.g. max capacity |
+| 3 USD | 1 | micro SD card | | Required to provide MP3 files. Check DF player specs to pick the right card, e.g. max capacity |
+| use your home installation | 1 | 8 Ohm Speaker | dismantle this one from <a href="https://de.aliexpress.com/item/33042023659.html?spm=a2g0o.order_list.order_list_main.478.499c5c5f3pOQDE&gatewayAdapt=glo2deu">AliExpress</a> |
+| use your home installation | 1 | Doorbell button | <a href="https://de.aliexpress.com/item/1005004920346156.html">AliExpress</a> | consider using button including 5V LED lighting |
+
+
+ESP doorbell without SD card:
+| Unit price | Quantity | Partname | Example | Notes |
+| ---------- | -------- | -------- | ------- | ----- |
+| 5 USD | 1 | ESP32 Dev Module | <a href="https://de.aliexpress.com/item/1005006336964908.html">AliExpress</a> | Case designed for WROOM USB-C type |
+| 1 USD | 1 | MAX98357A I2S Amplifier | <a href="https://de.aliexpress.com/item/1005008814235354.html">AliExpress</a> | |
+| 1 USD | 2 | 6 pin screw terminal | <a href="https://de.aliexpress.com/item/1005006642865467.html">AliExpress</a> | 5mm pitch |
 | use your home installation | 1 | 8 Ohm Speaker | dismantle this one from <a href="https://de.aliexpress.com/item/33042023659.html?spm=a2g0o.order_list.order_list_main.478.499c5c5f3pOQDE&gatewayAdapt=glo2deu">AliExpress</a> |
 | use your home installation | 1 | Doorbell button | <a href="https://de.aliexpress.com/item/1005004920346156.html">AliExpress</a> | consider using button including 5V LED lighting |
 
@@ -119,8 +130,8 @@ ESP doorbell:
 
 The wiring in the case is pretty much self explanatory and you can use the screw terminals according to your needs.
 
+ESP doorbell with onboard SD card:
 <img src="./schematics/schematics.jpg" alt="schematics"/>
-
 
 
 If you want to use the same screw terminal connections I used, then please take a look at the labeling models and what they tell which screw terminal is used for which purpose. 
@@ -141,6 +152,12 @@ All external connection are done via the screw connectors:
 - Can be connected directly to a single 8 Ohm speaker for output. No further amp required, also no resistors for volume regulation as output volume is controlled via SW.
 - The bell button is a simple closing contact to ground with internal pullup.
 - Optionally, an LED can be attached via GPIO output connected to ground, e.g. to light up the bell button at night. Please note that this is directly connected to GPIO of the ESP, so don't draw too much current (should be sufficient for up to 4 standard LEDs though)!
+
+
+
+ESP doorbell without SD card:
+TBD
+
 
 
 ## Usage
