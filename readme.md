@@ -13,9 +13,11 @@ An ESP32 based doorbell for use with home assistant with the doorbell sound of y
 - Example code provided (e.g. trigger camera snapshot)
 
 
-| Doorbell DIN rail case | Optional 5V power supply including double USB power out |
+| Module | Rendering |
 | ---------------------------- | --------------------------------------------------------------------|
-| ![rendering_doorbell_case](./print/rendering/rendering_doorbell_case.png)  | ![rendering_power_supply](./print/rendering/rendering_power_supply.png) |
+| Doorbell DIN rail case | ![rendering_doorbell_case](./print/rendering/rendering_doorbell_case.png)  
+| Doorbell DIN rail case (no SD card version) | ![rendering_doorbell_case_no_sd](./print/rendering/rendering_doorbell_case_no_sd.png) |
+| Optional 5V power supply including double USB power out | ![rendering_power_supply](./print/rendering/rendering_power_supply.png) |
 
 
 # Index
