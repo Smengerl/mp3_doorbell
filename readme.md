@@ -15,9 +15,9 @@ An ESP32 based doorbell for use with home assistant with the doorbell sound of y
 
 | Module | Rendering |
 | ---------------------------- | --------------------------------------------------------------------|
-| Doorbell DIN rail case | <img src="./print/rendering/rendering_doorbell_case.png" width="300"/> | 
-| Doorbell DIN rail case (no SD card version) | <img src="./print/rendering/rendering_doorbell_case_no_sd.png" width="300"/> |
-| Optional 5V power supply including double USB power out | <img src="./print/rendering/rendering_power_supply.png" width="300"/> |
+| Doorbell DIN rail case | <img src="./print/rendering/rendering_doorbell_case.png" height=300px /> | 
+| Doorbell DIN rail case (no SD card version) | <img src="./print/rendering/rendering_doorbell_case_no_sd.png" height=300px /> |
+| Optional 5V power supply including double USB power out | <img src="./print/rendering/rendering_power_supply.png" height=300px /> |
 
 
 # Index
@@ -45,25 +45,39 @@ If you have two color print capability, you can optionally print labels for the 
 
 ### 3D-Printed Parts
 
-ESP doorbell:
-| Filename                     | Thumbnail                                                           | Required |
-| ---------------------------- | --------------------------------------------------------------------| -------- |
-| `./print/case.stl`           | <img src="./print/rendering/case.png" alt="frame" width="300"/>                 | 1        |
-| `./print/case_no_sd.stl`           | <img src="./print/rendering/case_no_sd.png" alt="frame" width="300"/>                 | 1 (alternative the variant with SD card) |
-| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall" width="300"/>         | 1        |
-| `./print/hook.stl`           | <img src="./print/rendering/hook.png" alt="hook" width="300"/>                  | 1        |
-| `./print/label.stl`          | <img src="./print/rendering/label.png" alt="label" width="300"/>                | optional |
-| `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" alt="label_top" width="300"/>        | optional |
-| `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" alt="label_bottom" width="300"/>  | optional |
+
+Shared for all modesl:
+| Filename                     | Thumbnail                                    | Required |
+| ---------------------------- | -------------------------------------------- | -------- |
+| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" /> | 1        |
+| `./print/hook.stl`           | <img src="./print/rendering/hook.png" />     | 1        |
 
 
+ESP doorbell I (SD card/DF player):
+| Filename                     | Thumbnail                                         | Required |
+| ---------------------------- | ------------------------------------------------- | -------- |
+| `./print/case.stl`           | <img src="./print/rendering/case.png" />          | 1        |
+| `./print/label.stl`          | <img src="./print/rendering/label.png" />         | optional |
+| `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" />     | optional |
+| `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" />  | optional |
 
-Optional: separate 5V power supply:
-| Filename                     | Thumbnail                                                           | Required |
-| ---------------------------- | --------------------------------------------------------------------| -------- |
-| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" alt="side wall" width="300"/>         | 1        |
-| `./print/power_supply.stl`   | <img src="./print/rendering/power_supply.png" alt="pwoer_supply" width="300"/>  | 1        |
 
+ESP doorbell II (Streaming audio):
+| Filename                     | Thumbnail                                         | Required |
+| ---------------------------- | ------------------------------------------------- | -------- |
+| `./print/case_no_sd.stl`     | <img src="./print/rendering/case_no_sd.png" />    | 1        |
+| `./print/label.stl`          | <img src="./print/rendering/label.png" />         | optional |
+| `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" />     | optional |
+| `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" />  | optional |
+
+
+5V power supply:
+| Filename                                | Thumbnail                                                      | Required |
+| --------------------------------------- | -------------------------------------------------------------- | -------- |
+| `./print/power_supply.stl`              | <img src="./print/rendering/power_supply.png" />               | 1        |
+| `./print/power_supply_label_main.stl`   | <img src="./print/rendering/power_supply_label_main.png" />    | optional |
+| `./print/power_supply_label_top.stl`    | <img src="./print/rendering/power_supply_label_top.png" />     | optional |
+| `./print/power_supply_label_bottom.stl` | <img src="./print/rendering/power_supply_label_bottom.png" />  | optional |
 
 
 Printer settings:
@@ -71,26 +85,10 @@ Printer settings:
 - Best experience on my printer was to print the case using tree style support. 
 - No rafts/brim etc. reguired for any model.
 
-### Required screws
-
-
-ESP doorbell:
-| Name              | Spec    | Required |
-| ----------------- | ------- | -------- |
-| Countersunk screw | M4 6mm  | 6        |
-
-
-
-Optional: separate 5V power supply:
-| Name              | Spec    | Required |
-| ----------------- | ------- | -------- |
-| Countersunk screw | M4 6mm  | 6        |
-
-
 ### Assembly
 
 - Use hotglue to hold all electronic components in place within the housing (screw terminals, ESP32 and RF player).
-- Screw the side wall to the base of the case via the M4 screws.
+- Screw the side wall to the base of the case via 6 screw M3 5mm
 - Fit the cases to the DIN rail and fix them inserting the hook.
 
 
@@ -98,7 +96,7 @@ Optional: separate 5V power supply:
 
 ### Part list
 
-ESP doorbell with onboard SD card:
+ESP doorbell I (SD card/DF player):
 | Unit price | Quantity | Partname | Example | Notes |
 | ---------- | -------- | -------- | ------- | ----- |
 | 5 USD | 1 | ESP32 Dev Module | <a href="https://de.aliexpress.com/item/1005006336964908.html">AliExpress</a> | Case designed for WROOM USB-C type |
@@ -109,7 +107,7 @@ ESP doorbell with onboard SD card:
 | use your home installation | 1 | Doorbell button | <a href="https://de.aliexpress.com/item/1005004920346156.html">AliExpress</a> | consider using button including 5V LED lighting |
 
 
-ESP doorbell without SD card:
+ESP doorbell II (Streaming audio):
 | Unit price | Quantity | Partname | Example | Notes |
 | ---------- | -------- | -------- | ------- | ----- |
 | 5 USD | 1 | ESP32 Dev Module | <a href="https://de.aliexpress.com/item/1005006336964908.html">AliExpress</a> | Case designed for WROOM USB-C type |
@@ -130,15 +128,8 @@ ESP doorbell without SD card:
 
 ### Schematics
 
-The wiring in the case is pretty much self explanatory and you can use the screw terminals according to your needs.
 
-ESP doorbell with onboard SD card:
-<img src="./schematics/schematics.jpg" alt="schematics"/>
-
-
-If you want to use the same screw terminal connections I used, then please take a look at the labeling models and what they tell which screw terminal is used for which purpose. 
-
-
+ESP doorbell I (SD card/DF player):
 Make sure to establish the following connections within the housing between ESP, DF Player and terminals:
 - ESP GPIO26 TX (Pin 15) --> DF Player RX (Pin 2)
 - ESP GPIO27 RX (Pin 16) --> DF Player TX (Pin 3)
@@ -148,6 +139,16 @@ Make sure to establish the following connections within the housing between ESP,
 - 5V and GND from screw terminal to DF player and ESP
 - Consider connecting ground to two more screw terminals to be used for the LED and the button
 
+<img src="./schematics/schematics.jpg" alt="schematics"/>
+
+
+ESP doorbell II (Streaming audio):
+TBD
+
+
+
+External connections:
+If you want to use the same screw terminal connections I used, then please take a look at the labeling models and what they tell which screw terminal is used for which purpose. 
 
 All external connection are done via the screw connectors:
 - Power supply is 5V DC and can be optionally build using the parts described herein (Warning, this is dangerous voltage level!). If you want to be on the safe side, buy a suitable standard DIN rail power supply from the shelf. Do not use your old fashioned bell transformer as this is AC!
@@ -157,15 +158,12 @@ All external connection are done via the screw connectors:
 
 
 
-ESP doorbell without SD card:
-TBD
-
-
 
 ## Usage
 
-Adopting the ESP as device to home assistant via ESP home allows for flexible usage for different scenarios for which the following chapter illustrates some examples.
-
+- Click in to DIN rain and secure via the hook
+- Once powered on, adopt the device via ESP home
+- Adapt it to your usage scenarios via home assistant (see examples below)
 
 
 ### MP3 doorbell
