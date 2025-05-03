@@ -53,19 +53,11 @@ Shared for all modesl:
 | `./print/hook.stl`           | <img src="./print/rendering/hook.png" />     | 1        |
 
 
-ESP doorbell I (SD card/DF player):
+ESP doorbell
 | Filename                     | Thumbnail                                         | Required |
 | ---------------------------- | ------------------------------------------------- | -------- |
-| `./print/case.stl`           | <img src="./print/rendering/case.png" />          | 1        |
-| `./print/label.stl`          | <img src="./print/rendering/label.png" />         | optional |
-| `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" />     | optional |
-| `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" />  | optional |
-
-
-ESP doorbell II (Streaming audio):
-| Filename                     | Thumbnail                                         | Required |
-| ---------------------------- | ------------------------------------------------- | -------- |
-| `./print/case_no_sd.stl`     | <img src="./print/rendering/case_no_sd.png" />    | 1        |
+| `./print/case.stl`           | <img src="./print/rendering/case.png" />          | SD card/DF player version |
+| `./print/case_no_sd.stl`     | <img src="./print/rendering/case_no_sd.png" />    | Streaming audio version |
 | `./print/label.stl`          | <img src="./print/rendering/label.png" />         | optional |
 | `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" />     | optional |
 | `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" />  | optional |
