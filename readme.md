@@ -1,23 +1,25 @@
 # Multi-purpose MP3 doorbell for home assistant
 
-An ESP32 based doorbell for use with home assistant with the doorbell sound of your choice via SD card.
+This project features an ESP32-based doorbell designed for integration with Home Assistant. It allows you to play custom doorbell sounds from an SD card or stream audio, making it a versatile addition to your smart home setup.
 
-- A robust 3D printed structure for mounting on a DIN rail
-- fully functional doorbell running independent from home assistant
-- can be used as audio output device for any automation in home assistant - not limited to doorbell usecase
-- provide your own sounds via MP3 SD card or via network player 
-- support for doorbell light including light effects when ringing  
-- State and events exposed in home assistant via ESP home so that you can use the doorbell to trigger subsequent actions and automations 
-- low cost hardware of about 10 USD
-- optional 5V power supply including double USB C port
-- Example code provided (e.g. trigger camera snapshot)
+Features
+- Robust Design: A 3D-printed structure for mounting on a DIN rail.
+- Standalone Functionality: Fully functional doorbell without any need to build automations in home assistant
+- Versatile Audio Output: Can be used as an audio output device for any Home Assistant automation, not limited to doorbell use.
+- Custom Sounds: Play your own MP3 files from an SD card or stream audio via a network player.
+- Doorbell Light Support: Includes light effects when ringing.
+- Home Assistant Integration: Exposes states and events via ESPHome, enabling triggers for automations.
+- Low-Cost Hardware: Build the doorbell for approximately $10.
+- Optional Power Supply: Separate 5V power supply with dual USB-C ports for usage with other DIN rail parts.
+- Example Automations: Includes example code for triggering actions like camera snapshots.
+
 
 
 | Module | Rendering |
 | ---------------------------- | --------------------------------------------------------------------|
-| Doorbell DIN rail case | <img src="./print/rendering/rendering_doorbell_case.png" height=300px /> | 
-| Doorbell DIN rail case (no SD card version) | <img src="./print/rendering/rendering_doorbell_case_no_sd.png" height=300px /> |
-| Optional 5V power supply including double USB power out | <img src="./print/rendering/rendering_power_supply.png" height=300px /> |
+| Doorbell DIN rail case | <img src="./print/doorbell/rendering/rendering_doorbell_case.png" height=300px /> | 
+| Doorbell DIN rail case (no SD card version) | <img src="./print/doorbell/rendering/rendering_doorbell_case_no_sd.png" height=300px /> |
+| Optional 5V power supply including double USB power out | <img src="./print/power_supply/rendering/rendering_power_supply.png" height=300px /> |
 
 
 # Index
@@ -34,13 +36,11 @@ An ESP32 based doorbell for use with home assistant with the doorbell sound of y
 
 ## Mechanics
 
-The only mechanical part required is the housing for the electronics. 
-The case consist of a base and a side wall connected via screws. 
-It can fit on a DIN rail and is tightened via a hook. 
+The housing is the only mechanical part required for this project. It consists of a base and a side wall connected via screws. The case is designed to fit on a DIN rail and is secured with a hook.
 
-If you want to build the 5V power supply as well, you can use the same side wall as for the doorbell case.
+If you choose to build the optional 5V power supply, you can reuse the same side wall and hook as the doorbell case.
 
-If you have two color print capability, you can optionally print labels for the screw connectors and the top of the case.
+If you have the capabilities to print in multiple colors, you can optionally print labels for the screw connectors and the top of the case.
 
 
 ### 3D-Printed Parts
@@ -49,39 +49,40 @@ If you have two color print capability, you can optionally print labels for the 
 Shared for all modesl:
 | Filename                     | Thumbnail                                    | Required |
 | ---------------------------- | -------------------------------------------- | -------- |
-| `./print/sidewall.stl`       | <img src="./print/rendering/sidewall.png" /> | 1        |
-| `./print/hook.stl`           | <img src="./print/rendering/hook.png" />     | 1        |
+| `./print/shared_parts/sidewall.stl`       | <img src="./print/shared_parts/rendering/sidewall.png" /> | 1        |
+| `./print/shared_parts/hook.stl`           | <img src="./print/shared_parts/rendering/hook.png" />     | 1        |
 
 
 ESP doorbell
 | Filename                     | Thumbnail                                         | Required |
 | ---------------------------- | ------------------------------------------------- | -------- |
-| `./print/case.stl`           | <img src="./print/rendering/case.png" />          | SD card/DF player version |
-| `./print/case_no_sd.stl`     | <img src="./print/rendering/case_no_sd.png" />    | Streaming audio version |
-| `./print/label.stl`          | <img src="./print/rendering/label.png" />         | optional |
-| `./print/label_top.stl`      | <img src="./print/rendering/label_top.png" />     | optional |
-| `./print/label_bottom.stl`   | <img src="./print/rendering/label_bottom.png" />  | optional |
+| `./print/doorbell/case.stl`           | <img src="./print/doorbell/rendering/case.png" />          | SD card/DF player version |
+| `./print/doorbell/case_no_sd.stl`     | <img src="./print/doorbell/rendering/case_no_sd.png" />    | No SD card/DF player version, streaming audio only |
+| `./print/doorbell/label.stl`          | <img src="./print/doorbell/rendering/label.png" />         | optional |
+| `./print/doorbell/label_top.stl`      | <img src="./print/doorbell/rendering/label_top.png" />     | optional |
+| `./print/doorbell/label_bottom.stl`   | <img src="./print/doorbell/rendering/label_bottom.png" />  | optional |
 
 
 5V power supply:
 | Filename                                | Thumbnail                                                      | Required |
 | --------------------------------------- | -------------------------------------------------------------- | -------- |
-| `./print/power_supply.stl`              | <img src="./print/rendering/power_supply.png" />               | 1        |
-| `./print/power_supply_label_main.stl`   | <img src="./print/rendering/power_supply_label_main.png" />    | optional |
-| `./print/power_supply_label_top.stl`    | <img src="./print/rendering/power_supply_label_top.png" />     | optional |
-| `./print/power_supply_label_bottom.stl` | <img src="./print/rendering/power_supply_label_bottom.png" />  | optional |
+| `./print/power_supply/power_supply.stl`              | <img src="./print/power_supply/rendering/power_supply.png" />               | 1        |
+| `./print/power_supply/power_supply_label_main.stl`   | <img src="./print/power_supply/rendering/power_supply_label_main.png" />    | optional |
+| `./print/power_supply/power_supply_label_top.stl`    | <img src="./print/power_supply/rendering/power_supply_label_top.png" />     | optional |
+| `./print/power_supply/power_supply_label_bottom.stl` | <img src="./print/power_supply/rendering/power_supply_label_bottom.png" />  | optional |
 
 
 Printer settings:
-- All printed parts designed for PETG. 
-- Best experience on my printer was to print the case using tree style support. 
-- No rafts/brim etc. reguired for any model.
+- Material: PETG or PLA.
+- Orientation: Print parts as shown in the thumbnails.
+- Supports: Not required unless manually for the ESP mounting tips (use paint on supports in your slicer).
+- Rafts/Brims: Not required.
 
 ### Assembly
 
-- Use hotglue to hold all electronic components in place within the housing (screw terminals, ESP32 and RF player).
-- Screw the side wall to the base of the case via 6 screw M3 5mm
-- Fit the cases to the DIN rail and fix them inserting the hook.
+- Use hot glue to secure all electronic components (e.g., screw terminals, ESP32, DF Player) inside the housing.
+- Attach the side wall to the base using six M3 5mm screws.
+- Mount the case on the DIN rail and secure it with the hook.
 
 
 ## Electronics
@@ -158,37 +159,32 @@ All external connection are done via the screw connectors:
 - Adapt it to your usage scenarios via home assistant (see examples below)
 
 
-### MP3 doorbell
+### MP3 doorbell (SD card version)
 
-The YAML provided as ESP home integration already includes this doorbell usecase "hardcoded" for robustnes reasons as it does not require an automation in HA and no signals need to be send to home assistant back and forth
-If you don't need this, just strip down the code to make it become a generic device to play MP3 files triggered by home assistant. 
+The provided ESPHome YAML configuration includes a preconfigured doorbell use case for robustness and low latency. It works independently of Home Assistant but also exposes entities for further automation.
 
-Features
-- Fully functional doorbell not requiring any interaction with home assistant (robustnes, latency)
-- Exposes doorbell to home assistant so you can use it to trigger automations 
-- Configurable volume and doorbell sound via HA GUI
-- Test buttons and diagnosis signals provided to HA GUI
+Features:
+
+- Fully functional standalone doorbell.
+- Configurable volume and sound via Home Assistant GUI.
+- Exposes further entities for use in custom automations as generic SD card MP3 player
+- Test buttons and diagnostics available in Home Assistant.
 - DF player API provided to HA for even more flexible use in automations
-- As my DF player sometimes "hangs" and playback is never ended automatically blocking further calls, a watchdog is used which resets DF player 2min after the doorbell was triggered if it is still playing 
-- Although the original DF player supports sleep mode and it could be used to save power in the doorbell usecase, I disabled this feature in code as I found waking up from sleep doesn't work reliably for most DF players sold these days. You can uncomment the corresponding lines in code if you want to try this out for your player
+- Watchdog to reset the DF Player if it hangs during playback.
 
 You can find the YAML source code for home assistant in `./esphome_src/`
 - `./esphome_src/doorbell-sound.yaml` main file for ESP home configuration, contains the relevant source code, imports all following packages
 - `./esphome_src/shared_packages/debug_basics.yaml` Adds debug releated entities (optional), generic - not limited to use in this project
 
 
-
-
 Note: DF player only supports certain SD cards and requires it to be formated in the right file system. See DF player documentation for details. 
 It is also noteworthy that DF player plays the MP3 files on the SD card by the order of the FAT entry. Advising the player to play file #3 plays the third file that was written to the sd card - no matter of its filename or folder location.
-
 
 Tip: Consider seasonal modes such as special Halloween sounds for your doorbell
 
 ### Camera snapshot
 
-As the doorbell exposes the doorbell button as entity in HA, you can use a change to this entity state to trigger automations.
-This can be anything, e.g. switching the light on at the door when its dark.
+Use the doorbell button entity in Home Assistant to trigger automations, such as switching the light on at the door in the dark. 
 
 
 A more advanced usecase would be to take a snapshot of the visitor and interpret it via Gemini integration in order to send you a push notification including information about who rang the bell.
