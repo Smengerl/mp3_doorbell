@@ -6,12 +6,13 @@ Features
 - Robust Design: A 3D-printed structure for mounting on a DIN rail.
 - Standalone Functionality: Fully functional doorbell without any need to build automations in home assistant
 - Versatile Audio Output: Can be used as an audio output device for any Home Assistant automation, not limited to doorbell use.
-- Custom Sounds: Play your own MP3 files from an SD card or stream audio via a network player.
+- Custom Sounds: Play your own MP3 files as ringtone
+- SD card support: Optional support to provide exchangeable ringtones via SD card or use streaming audio via a network player.
 - Doorbell Light Support: Includes light effects when ringing.
 - Home Assistant Integration: Exposes states and events via ESPHome, enabling triggers for automations.
 - Low-Cost Hardware: Build the doorbell for approximately $10.
 - Optional Power Supply: Separate 5V power supply with dual USB-C ports for usage with other DIN rail parts.
-- Example Automations: Includes example code for triggering actions like camera snapshots.
+- Example Automations: Includes example code for triggering actions when door in rung like camera snapshots.
 
 
 
@@ -26,9 +27,13 @@ Features
 - [Mechanics](#Mechanics)
 - [Electronics](#Electronics)
 - [Usage: MP3 doorbell](#mp3-doorbell)
+- [Usage: MP3 doorbell with SD card ringtones](#mp3-doorbell-with-sd-card-ringtones)
+- [Usage: MP3 doorbell with streaming audio ringtones](#mp3-doorbell-with-streaming-audio-ringtones)
 - [Usage: Camera snapshot](#camera-snapshot)
 - [Usage: Home Reminder](#home-reminder)
 - [Acknowledgements](#Acknowledgements)
+
+
 
 
  
@@ -38,7 +43,9 @@ Features
 
 The housing is the only mechanical part required for this project. It consists of a base and a side wall connected via screws. The case is designed to fit on a DIN rail and is secured with a hook.
 
-If you choose to build the optional 5V power supply, you can reuse the same side wall and hook as the doorbell case.
+There is a housing variant with SD card slot and one without which require slightly different electronics.
+
+If you choose to build the optional 5V power supply, the same side wall and hook is used as for the doorbell case.
 
 If you have the capabilities to print in multiple colors, you can optionally print labels for the screw connectors and the top of the case.
 
@@ -56,8 +63,8 @@ Shared for all modesl:
 ESP doorbell
 | Filename                     | Thumbnail                                         | Required |
 | ---------------------------- | ------------------------------------------------- | -------- |
-| `./print/doorbell/case.stl`           | <img src="./print/doorbell/rendering/case.png" />          | SD card/DF player version |
-| `./print/doorbell/case_no_sd.stl`     | <img src="./print/doorbell/rendering/case_no_sd.png" />    | No SD card/DF player version, streaming audio only |
+| `./print/doorbell/case.stl`           | <img src="./print/doorbell/rendering/case.png" />          | SD card version |
+| `./print/doorbell/case_no_sd.stl`     | <img src="./print/doorbell/rendering/case_no_sd.png" />    | No SD card version |
 | `./print/doorbell/label.stl`          | <img src="./print/doorbell/rendering/label.png" />         | optional |
 | `./print/doorbell/label_top.stl`      | <img src="./print/doorbell/rendering/label_top.png" />     | optional |
 | `./print/doorbell/label_bottom.stl`   | <img src="./print/doorbell/rendering/label_bottom.png" />  | optional |
@@ -75,21 +82,29 @@ ESP doorbell
 Printer settings:
 - Material: PETG or PLA.
 - Orientation: Print parts as shown in the thumbnails.
-- Supports: Not required unless manually for the ESP mounting tips (use paint on supports in your slicer).
+- Supports: Not required unless for the ESP mounting tips (use paint-on supports in your slicer).
 - Rafts/Brims: Not required.
 
 ### Assembly
 
-- Use hot glue to secure all electronic components (e.g., screw terminals, ESP32, DF Player) inside the housing.
+- Use hot glue to secure all electronic components (e.g., screw terminals, ESP32, DF Player) inside the housing after you have done the wiring.
 - Attach the side wall to the base using six M3 5mm screws.
 - Mount the case on the DIN rail and secure it with the hook.
 
 
 ## Electronics
 
-### Part list
+If you want the user to be able to change the doorbell sound at runtime without recompiling, please build the variant with SD card (ESP doorbell I), otherwise build the simpler variant (ESP doorbell II). Further below I will show how the variant without SD card can be modified to use streamed doorbell sound.
 
-ESP doorbell I (SD card/DF player):
+All external connection are done via the screw connectors:
+- Power supply is 5V DC and can be optionally build using the parts described herein (Be cautios, this is dangerous voltage level!). If you want to be on the safe side, buy a suitable standard DIN rail power supply from the shelf. Do not use your old fashioned bell transformer as this is AC!
+- Can be connected directly to a single 8 Ohm speaker for output. No further amp required, also no resistors for volume regulation as output volume is controlled via SW.
+- The bell button is a simple closing contact to ground with internal pullup.
+- Optionally, an LED can be attached via GPIO output connected to ground, e.g. to light up the bell button at night. Please note that this is directly connected to GPIO of the ESP, so 5V don't draw too much current (should be sufficient for up to 4 standard LEDs though)!
+
+
+### ESP doorbell I (SD card support)
+
 | Unit price | Quantity | Partname | Example | Notes |
 | ---------- | -------- | -------- | ------- | ----- |
 | 5 USD | 1 | ESP32 Dev Module | <a href="https://de.aliexpress.com/item/1005006336964908.html">AliExpress</a> | Case designed for WROOM USB-C type |
@@ -98,29 +113,6 @@ ESP doorbell I (SD card/DF player):
 | 3 USD | 1 | micro SD card | | Required to provide MP3 files. Check DF player specs to pick the right card, e.g. max capacity |
 | use your home installation | 1 | 8 Ohm Speaker | dismantle this one from <a href="https://de.aliexpress.com/item/33042023659.html?spm=a2g0o.order_list.order_list_main.478.499c5c5f3pOQDE&gatewayAdapt=glo2deu">AliExpress</a> |
 | use your home installation | 1 | Doorbell button | <a href="https://de.aliexpress.com/item/1005004920346156.html">AliExpress</a> | consider using button including 5V LED lighting |
-
-
-ESP doorbell II (Streaming audio):
-| Unit price | Quantity | Partname | Example | Notes |
-| ---------- | -------- | -------- | ------- | ----- |
-| 5 USD | 1 | ESP32 Dev Module | <a href="https://de.aliexpress.com/item/1005006336964908.html">AliExpress</a> | Case designed for WROOM USB-C type |
-| 1 USD | 1 | MAX98357A I2S Amplifier | <a href="https://de.aliexpress.com/item/1005008814235354.html">AliExpress</a> | |
-| 1 USD | 2 | 6 pin screw terminal | <a href="https://de.aliexpress.com/item/1005006642865467.html">AliExpress</a> | 5mm pitch |
-| use your home installation | 1 | 8 Ohm Speaker | dismantle this one from <a href="https://de.aliexpress.com/item/33042023659.html?spm=a2g0o.order_list.order_list_main.478.499c5c5f3pOQDE&gatewayAdapt=glo2deu">AliExpress</a> |
-| use your home installation | 1 | Doorbell button | <a href="https://de.aliexpress.com/item/1005004920346156.html">AliExpress</a> | consider using button including 5V LED lighting |
-
-
-5V power supply:
-| Unit price | Quantity | Partname | Example | Notes |
-| ---------- | -------- | -------- | ------- | ----- |
-| 1 USD | 2 | 2 pin screw terminal | <a href="https://de.aliexpress.com/item/1005006642865467.html">AliExpress</a> | 5mm pitch |
-| 2 USD | 1 | 5V power supply | <a href="https://de.aliexpress.com/item/1005005021311232.html">AliExpress</a> |  |
-| 1 USD | 2 | USB connector | <a href="https://de.aliexpress.com/item/1005005776162012.html">AliExpress</a> |  |
-
-
-
-### Schematics
-
 
 ESP doorbell I (SD card/DF player):
 Make sure to establish the following connections within the housing between ESP, DF Player and terminals:
@@ -132,22 +124,41 @@ Make sure to establish the following connections within the housing between ESP,
 - 5V and GND from screw terminal to DF player and ESP
 - Consider connecting ground to two more screw terminals to be used for the LED and the button
 
-<img src="./schematics/schematics.jpg" alt="schematics"/>
-
-
-ESP doorbell II (Streaming audio):
-TBD
+<img src="./schematics/sd_card/schematics.jpg" alt="schematics"/>
 
 
 
-External connections:
-If you want to use the same screw terminal connections I used, then please take a look at the labeling models and what they tell which screw terminal is used for which purpose. 
 
-All external connection are done via the screw connectors:
-- Power supply is 5V DC and can be optionally build using the parts described herein (Warning, this is dangerous voltage level!). If you want to be on the safe side, buy a suitable standard DIN rail power supply from the shelf. Do not use your old fashioned bell transformer as this is AC!
-- Can be connected directly to a single 8 Ohm speaker for output. No further amp required, also no resistors for volume regulation as output volume is controlled via SW.
-- The bell button is a simple closing contact to ground with internal pullup.
-- Optionally, an LED can be attached via GPIO output connected to ground, e.g. to light up the bell button at night. Please note that this is directly connected to GPIO of the ESP, so don't draw too much current (should be sufficient for up to 4 standard LEDs though)!
+### ESP doorbell II (No SD card: build-in ringtone or streaming audio):
+
+| Unit price | Quantity | Partname | Example | Notes |
+| ---------- | -------- | -------- | ------- | ----- |
+| 5 USD | 1 | ESP32 Dev Module | <a href="https://de.aliexpress.com/item/1005006336964908.html">AliExpress</a> | Case designed for WROOM USB-C type |
+| 1 USD | 1 | MAX98357A I2S Amplifier | <a href="https://de.aliexpress.com/item/1005008814235354.html">AliExpress</a> | |
+| 1 USD | 2 | 6 pin screw terminal | <a href="https://de.aliexpress.com/item/1005006642865467.html">AliExpress</a> | 5mm pitch |
+| use your home installation | 1 | 8 Ohm Speaker | dismantle this one from <a href="https://de.aliexpress.com/item/33042023659.html?spm=a2g0o.order_list.order_list_main.478.499c5c5f3pOQDE&gatewayAdapt=glo2deu">AliExpress</a> |
+| use your home installation | 1 | Doorbell button | <a href="https://de.aliexpress.com/item/1005004920346156.html">AliExpress</a> | consider using button including 5V LED lighting |
+
+Make sure to establish the following connections within the housing between ESP, I2S amplifier and terminals:
+- GPIO26 --> I2S Amp LRCLK 
+- GPIO27 --> I2S Amp BCLK 
+- GPIO25 --> I2S Amp DATA 
+- I2S Amp Spk1+Spk2 --> Speaker 8 Ohm
+- ESP GPIO33 (internal pullup) --> Doorbell button
+- ESP GPIO32 --> Doorbell LED
+- 5V and GND from screw terminal to I2S Amp and ESP
+- Consider connecting ground to two more screw terminals to be used for the LED and the button
+
+<img src="./schematics/no_sd_card/schematics.jpg" alt="schematics"/>
+
+
+### 5V power supply:
+| Unit price | Quantity | Partname | Example | Notes |
+| ---------- | -------- | -------- | ------- | ----- |
+| 1 USD | 2 | 2 pin screw terminal | <a href="https://de.aliexpress.com/item/1005006642865467.html">AliExpress</a> | 5mm pitch |
+| 2 USD | 1 | 5V power supply | <a href="https://de.aliexpress.com/item/1005005021311232.html">AliExpress</a> |  |
+| 1 USD | 2 | USB connector | <a href="https://de.aliexpress.com/item/1005005776162012.html">AliExpress</a> |  |
+
 
 
 
@@ -159,12 +170,30 @@ All external connection are done via the screw connectors:
 - Adapt it to your usage scenarios via home assistant (see examples below)
 
 
-### MP3 doorbell (SD card version)
+### MP3 doorbell
 
-The provided ESPHome YAML configuration includes a preconfigured doorbell use case for robustness and low latency. It works independently of Home Assistant but also exposes entities for further automation.
+This most simple doorbell uses a build-in soundfile as ringtone. It's robust and has low latency as it the doorbell functionality works independently of Home Assistant. However, it also exposes entities for optional further automation.
+
+This requires the box without SD card (ESP doorbell II).
 
 Features:
+- Fully functional standalone doorbell.
+- Simple and robust
+- Configurable volume via Home Assistant GUI.
+- Exposes trigger for use in custom automations in home assistant
+- Test buttons and diagnostics available in Home Assistant.
 
+Find the sourcecode here: `./esphome_src/doorbell-sound.yaml`
+
+
+
+### MP3 doorbell with SD card ringtones
+
+This more advanced doorbell allows the user to provide their own ringtones via SD card. It's also robust and has low latency as it the doorbell functionality works independently of Home Assistant. However, it also exposes entities for optional further automation and allows to remote control the doorbell's audio player.
+
+This requires the box with SD card (ESP doorbell I).
+
+Features:
 - Fully functional standalone doorbell.
 - Configurable volume and sound via Home Assistant GUI.
 - Exposes further entities for use in custom automations as generic SD card MP3 player
@@ -172,25 +201,39 @@ Features:
 - DF player API provided to HA for even more flexible use in automations
 - Watchdog to reset the DF Player if it hangs during playback.
 
-You can find the YAML source code for home assistant in `./esphome_src/`
-- `./esphome_src/doorbell-sound.yaml` main file for ESP home configuration, contains the relevant source code, imports all following packages
-- `./esphome_src/shared_packages/debug_basics.yaml` Adds debug releated entities (optional), generic - not limited to use in this project
+Find the sourcecode here: `./esphome_src/doorbell-sound-sd-card.yaml`
+
+Note: 
+- DF player only supports certain SD cards and requires it to be formated in the right file system. See DF player documentation for details. 
+- DF player plays the MP3 files on the SD card by the order of the FAT entry. Advising the player to play file #3 plays the third file that was written to the sd card - no matter of its filename or folder location.
+- Most of the DF players I bought seem to have robustness issues as I saw them not responding every couple of months - which is bad for a doorbell. Ejecting and reinserting the SD card fixed the issue. 
 
 
-Note: DF player only supports certain SD cards and requires it to be formated in the right file system. See DF player documentation for details. 
-It is also noteworthy that DF player plays the MP3 files on the SD card by the order of the FAT entry. Advising the player to play file #3 plays the third file that was written to the sd card - no matter of its filename or folder location.
 
-Tip: Consider seasonal modes such as special Halloween sounds for your doorbell
+### MP3 doorbell with streaming audio ringtones
+
+This most flexible doorbell streams an audio file from a network source or the internet. Due to this, it is not as reliable and fast as the standalone variants as it requires a working network connection as well as ad-hoc download and decoding of the file. This variant also exposes several entities for optional further automation and allows to remote control the doorbell's audio player.
+
+This requires the box without SD card (ESP doorbell II).
+
+Features:
+- Most flexible due to full audio streaming capability
+- Can play network and internet sources or even web radio
+- Configurable volume and sound via Home Assistant GUI.
+- Exposes further entities for use in custom automations
+- Test buttons and diagnostics available in Home Assistant.
+
+Find the sourcecode here: `./esphome_src/doorbell-sound-streaming-audio.yaml`
+
+
 
 ### Camera snapshot
 
-Use the doorbell button entity in Home Assistant to trigger automations, such as switching the light on at the door in the dark. 
+This example illustrates how to use the doorbell to trigger further actions via automations.
+This could be as simple as switching the light on at the door in the dark. 
+A more advanced usecase is shown here, which takes a snapshot of the visitor and interprets it via Gemini integration in order to send you a push notification.
 
-
-A more advanced usecase would be to take a snapshot of the visitor and interpret it via Gemini integration in order to send you a push notification including information about who rang the bell.
-
-
-This can be achieved by adding the Gemini generative AI integration to your HA and add some automations.
+For this, add and set up the Gemini integration in home assistant.
 
 Using the following prompt you can interpret a camera image:
 ```
@@ -253,7 +296,7 @@ actions:
     default:
     - data:
         prompt: "YOUR PROMPT HERE"
-        image_filename: '{{ snapshot_create_file_path }}'
+        filenames: '{{ snapshot_create_file_path }}'
       response_variable: generated_content
       action: google_generative_ai_conversation.generate_content
     - metadata: {}
