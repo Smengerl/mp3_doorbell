@@ -29,7 +29,7 @@ Features
 - [Usage: MP3 doorbell](#mp3-doorbell)
 - [Usage: MP3 doorbell with SD card ringtones](#mp3-doorbell-with-sd-card-ringtones)
 - [Usage: MP3 doorbell with streaming audio ringtones](#mp3-doorbell-with-streaming-audio-ringtones)
-- [Usage: Camera snapshot](#camera-snapshot)
+- [Usage: Camera snapshot](#doorbell-with-camera-snapshot-and-ai-push-notification)
 - [Usage: Home Reminder](#home-reminder)
 - [Acknowledgements](#Acknowledgements)
 
@@ -227,7 +227,7 @@ Find the sourcecode here: `./esphome_src/doorbell-sound-streaming-audio.yaml`
 
 
 
-### Camera snapshot
+### Doorbell with camera snapshot and AI push notification
 
 This example illustrates how to use the doorbell to trigger further actions via automations.
 This could be as simple as switching the light on at the door in the dark. 

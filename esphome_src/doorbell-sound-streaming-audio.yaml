@@ -1,7 +1,7 @@
 substitutions:
-  name: doorbell-sound
-  friendly_name: Doorbell (I2S player variant)
-  comment: Standalone MP3 Doorbell with HA integration   
+  name: doorbell-sound-streaming-audio
+  friendly_name: Doorbell (Streaming audio variant)
+  comment: Standalone MP3 Doorbell with streaming audio ringtone and HA integration   
 
   TAG: "doorbell-sound"
 
@@ -10,7 +10,7 @@ substitutions:
   i2s_bclk: GPIO27 
   i2s_data: GPIO25 
 
-  ringtone_filepath: "./doorbell.mp3"
+  ringtone_filepath: "./doorbell_packages/doorbell.mp3"
 
 
 packages:
@@ -22,47 +22,30 @@ packages:
 
 
 
+substitutions:
+  # GPIO Pins
+  i2s_lrclk: GPIO26 
+  i2s_bclk: GPIO27 
+  i2s_data: GPIO25 
 
 
 
 
-
-# I2S bus config
+# Example configuration entry
 i2s_audio:
   i2s_lrclk_pin: $i2s_lrclk
   i2s_bclk_pin: $i2s_bclk
 
-# Speaker component for raw audio output
-speaker:
-  - platform: i2s_audio
-    id: output_speaker
-    i2s_dout_pin: $i2s_data
-    dac_type: external    
-    #bits_per_sample: 32bit
-    #channel: right
-    #buffer_duration: 60ms
-
-# Media player to decode audio files and send to speaker
+# Example configuration entry
 media_player:
-  - platform: speaker
+  - platform: i2s_audio
+    name: "Doorbell Media Player"
+    icon: mdi:doorbell
     id: i2s_media_player_id
-    announcement_pipeline:
-      speaker: output_speaker
-      format: WAV
-    codec_support_enabled: true
-    buffer_size: 6000
-    files:
-      - id: ringtone
-        file: $ringtone_filepath
-    on_mute:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Media player muted");
-    on_unmute:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Media player unmuted");
-    on_volume:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Media player volume change!");
+    dac_type: external
+    i2s_dout_pin: $i2s_data
+    mode: mono
+
     on_idle:
       - lambda: |-
           ESP_LOGI("${TAG}", "Doorbell playback finished!");
@@ -76,14 +59,45 @@ media_player:
       - lambda: |-
           ESP_LOGI("${TAG}", "Player announcement");
 
+
+text:
+  - platform: template
+    id: ringtone_path
+    name: "Ringtone URL"
+    icon: mdi:download
+    mode: text
+    optimistic: true
+    restore_value: true
+    initial_value: "http://homeassistant.local:8123/local/doorbell.mp3"
+    on_value:
+      - logger.log:
+          format: "Ringtone URL changed"
+          level: INFO
+          tag: "${TAG}"
+
+
+
 logger:
   level: DEBUG
   logs:
     media_player: DEBUG
 
+
 script:
-  - id: trigger_doorbell
+  - id: trigger_doorbell_alt
     then:
+      - if:
+          condition:
+            - media_player.is_playing: 
+                id: i2s_media_player_id
+          then:
+            - media_player.stop: 
+                id: i2s_media_player_id
+            - logger.log:
+                format: "Media player still playing. Cancelling"
+                level: WARN
+                tag: "${TAG}"
+
       - event.trigger:
           id: doorbell_event
           event_type: "button_pressed"
@@ -98,20 +112,9 @@ script:
           id: i2s_media_player_id
           volume: !lambda 'return id(var_volume).state / 100.0;'
 
-
-      - media_player.speaker.play_on_device_media_file: 
+      - media_player.play_media: 
           id: i2s_media_player_id
-          media_file: ringtone
-          announcement: true
-          enqueue: false
-      - wait_until:
-          media_player.is_announcing:
-            id: i2s_media_player_id
-      - wait_until:
-          not:
-            media_player.is_announcing:
-              id: i2s_media_player_id
-
+          media_url: !lambda 'return id(ringtone_path).state;'
 
       - wait_until:
           media_player.is_idle:
@@ -129,7 +132,6 @@ script:
           else:
             - light.turn_off:
                 id: doorbell_led_internal
-
 
 
 

@@ -1,0 +1,274 @@
+substitutions:
+  name: doorbell-sound-sd-card
+  friendly_name: Doorbell (SD card player variant)
+  comment: Standalone MP3 Doorbell with HA integration and ringtones via SD card   
+
+  TAG: "doorbell-sound"
+
+
+  # GPIO Pins
+  pin_dfPlayer_tx: GPIO26 # ESP TX (Pin 15) --> DF Player RX (Pin 2), purple wire
+  pin_dfPlayer_rx: GPIO27 # ESP RX (Pin 16) --> DF Player TX (Pin 3), gray wire
+
+  # Default Settings
+  default_sound: "005 melodic classic doorbell" # initial value for doorbell sound
+  default_sound_index: "5" # Index for default doorbell sound
+
+
+
+packages:
+  debug_basics: !include shared_packages/debug_basics.yaml
+  device_basics: !include doorbell_packages/device_basics.yaml
+
+
+
+
+
+
+uart:
+  tx_pin: ${pin_dfPlayer_tx}
+  rx_pin: ${pin_dfPlayer_rx}
+  baud_rate: 9600
+
+
+select:
+  - platform: template
+    name: Ringtone
+    id: ringtone_select
+    options:
+     - "001 alert bells echo"
+     - "002 cartoon door melodic bell"
+     - "003 futuristic cinematic sweep"
+     - "004 futuristic doorbell"
+     - "${default_sound}"
+     - "006 repeating arcade beep"
+     - "007 retro game notification"
+     - "008 software interface back"
+     - "009 software inteface remove"
+     - "010 terror transition"
+     - "011 trumpet fanfare"
+     - "012 uplifting glute notfication"
+     - "013 vintage telephone ringtone"
+     - "014 wolf creature howling roar"
+     - "015 arcade-retro-game-over"
+     - "016 cartoon-character-cute-sneeze"
+     - "017 cartoon-toy-whistle"
+     - "018 casino-bling-achievement"
+     - "019 game-over-trombone"
+     - "020 guitar-notification-alert"
+     - "021 horror-movie-transition"
+     - "022 industry-alarm-tone"
+     - "023 melodical flute"
+     - "024 sad game over trombone"
+     - "025 sci-fi lightsaber on"
+     - "026 software interface back"
+     - "027 toy whistler bird"
+     - "028 battle man scream"
+     - "029 cool guitar riff"
+     - "030 drum roll"
+     - "031 electric guitar distorted slide"
+     - "032 epic orchestra transition"
+     - "033 flute cell phone alert"
+     - "034 guitar notification alert"
+     - "035 guitar stroke down slow"
+     - "036 guitar stroke up slow"
+     - "037 happy guitar-chords"
+     - "038 melodic church bell"
+     - "039 movie trailer synth impact"
+     - "040 nasty creature roar"
+     - "041 relaxing bell chime"
+     - "042 short guitar riff"
+     - "043 synth-calculator-melody"
+     - "044 synth metal rhythm"
+     - "045 synth pass"
+     - "046 cash register"
+     - "047 Facility Alarm"
+     - "048 Classic Alarm"
+     - "049 Alert Alarm"
+    initial_option: ${default_sound}
+    icon: mdi:music
+    optimistic: true
+    on_value:
+      then:
+        - lambda: |-
+            ESP_LOGI("${TAG}", "Doorbell ringtone changed! (Ringtone %03d.mp3: %s)", i, x.c_str());
+
+
+
+#-------------------------------------------
+# Built in doorbell functionality
+#-------------------------------------------
+script:
+  - id: trigger_doorbell
+    then:
+      - lambda: |-
+          // Stop and restart the watchdog
+          id(df_player_watchdog).stop();
+          id(df_player_watchdog).execute();
+
+          // Handle playback status
+          if (id(df_player).is_playing()) {
+            ESP_LOGW("${TAG}", "Playback was active when doorbell triggered. Might be due to an error.");
+            // id(df_player).reset();
+            // esphome::delay(1500); // Allow the DFPlayer to reset
+          }
+
+          // Trigger the doorbell event
+          id(doorbell_event).trigger("button_pressed");
+
+          // Set the volume
+          int volume = (int)(id(var_volume).state);
+          id(df_player).set_volume(volume * 30 / 100); // Set volume to 0-30 range
+
+          // Play the selected ringtone
+          esphome::delay(150); // Allow DFPlayer to process
+          auto ringtone_string = id(ringtone_select).state.c_str();
+          auto ringtone_index = id(ringtone_select).active_index();
+          int ringtone;
+          if (ringtone_index.has_value()) {
+            ringtone = ringtone_index.value() + 1;
+            ESP_LOGI("${TAG}", "Doorbell triggered! (Volume: %d; Ringtone: %03d.mp3: %s)", volume, ringtone, ringtone_string);
+          } else {
+            ringtone = ${default_sound_index};
+            ESP_LOGW("${TAG}", "Cannot determine selected ringtone. Using default.");
+          }
+          id(df_player).play_file(ringtone);
+
+          // Turn on LED effects
+          id(onboard_led).turn_on().perform();
+          id(doorbell_led_internal).turn_on().set_effect("${fast_pulse_effect_name}").perform();
+
+  # Watchdog to reset player if still playing after 2min
+  - id: df_player_watchdog
+    then:
+      - lambda: |-
+          ESP_LOGI("${TAG}", "DF Player watchdog started");
+      - delay: 2min # use yaml syntax as no easy way to wait in a non-blocking way in lambdas
+      - lambda: |-
+          // esphome::delay(120000); // Wait max 2min
+          ESP_LOGW("${TAG}", "DF Player watchdog fired, reseting device");
+          id(df_player).reset(); // Reset DF player if it is still playing after 2min
+
+# Stop light effect on doorbell, sitch off the control LEDs and stop watchdog when playing has finished
+dfplayer:
+  id: df_player
+  on_finished_playback:
+    then:
+      - lambda: |-
+          id(df_player_watchdog).stop(); // stop watchdog
+
+          ESP_LOGI("${TAG}", "Doorbell playback finished!");
+          id(onboard_led).turn_off().perform();
+          if (id(doorbell_led).state) { // Restore doorbell LED to configured state 
+            id(doorbell_led_internal).turn_on().set_effect("None").perform();
+          } else {
+            id(doorbell_led_internal).turn_off().perform();
+          }
+          // dfplayer.sleep // Aggresive sleep mode
+
+
+
+
+
+#-------------------------------------------
+# API
+# Enable Home Assistant API
+# Expose all functions of DF player also for remote access e.g. in automations
+#-------------------------------------------
+api:
+  actions:
+#  - action: dfplayer_next
+#    then:
+#      - dfplayer.set_device: TF_CARD
+#      - dfplayer.play_next:
+#  - action: dfplayer_previous
+#    then:
+#      - dfplayer.set_device: TF_CARD
+#      - dfplayer.play_previous:
+  - action: dfplayer_play
+    variables:
+      file: int
+    then:
+#      - dfplayer.set_device: TF_CARD
+      - dfplayer.play: !lambda 'return file;'
+  - action: dfplayer_play_loop
+    variables:
+      file: int
+      loop_: bool
+    then:
+#      - dfplayer.set_device: TF_CARD
+      - dfplayer.play:
+          file: !lambda 'return file;'
+          loop: !lambda 'return loop_;'
+  - action: dfplayer_play_folder
+    variables:
+      folder: int
+      file: int
+    then:
+#      - dfplayer.set_device: TF_CARD
+      - dfplayer.play_folder:
+          folder: !lambda 'return folder;'
+          file: !lambda 'return file;'
+
+  - action: dfplayer_play_loop_folder
+    variables:
+      folder: int
+    then:
+#      - dfplayer.set_device: TF_CARD
+      - dfplayer.play_folder:
+          folder: !lambda 'return folder;'
+          loop: true
+
+#  - action: dfplayer_set_device_tf
+#    then:
+#      - dfplayer.set_device: TF_CARD
+
+#  - action: dfplayer_set_device_usb
+#    then:
+#      - dfplayer.set_device: USB
+
+  - action: dfplayer_set_volume
+    variables:
+      volume: int
+    then:
+      - dfplayer.set_volume: !lambda 'return volume;'
+#  - action: dfplayer_set_eq
+#    variables: # Valid values are NORMAL, POP, ROCK, JAZZ, CLASSIC and BASS.
+#      preset: int
+#    then:
+#      - dfplayer.set_eq: !lambda 'return static_cast<dfplayer::EqPreset>(preset);'
+
+#  - action: dfplayer_sleep
+#    then:
+#      - dfplayer.sleep
+
+  - action: dfplayer_reset
+    then:
+      - dfplayer.reset
+
+  - action: dfplayer_start
+    then:
+#      - dfplayer.set_device: TF_CARD
+      - dfplayer.start
+
+  - action: dfplayer_pause
+    then:
+      - dfplayer.pause
+
+  - action: dfplayer_stop
+    then:
+      - dfplayer.stop
+
+#  - action: dfplayer_random
+#    then:
+#      - dfplayer.random
+
+#  - action: dfplayer_volume_up
+#    then:
+#      - dfplayer.volume_up
+
+#  - action: dfplayer_volume_down
+#    then:
+#      - dfplayer.volume_down
+
+
