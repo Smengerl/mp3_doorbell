@@ -185,6 +185,7 @@ Features:
 
 Find the sourcecode here: `./esphome_src/doorbell-sound.yaml`
 
+Note that you might need to transcode your MP3 ringtone to WAV format to not require on-the-fly decoding. You can use ffmpeg for this. As the file is included in the image, use mono and very low bitrate, e.g. `ffmpeg -i doorbell.mp3 -ar 22050 -ac 1 -b:a 16000 doorbell.wav`
 
 
 ### MP3 doorbell with SD card ringtones
@@ -206,7 +207,7 @@ Find the sourcecode here: `./esphome_src/doorbell-sound-sd-card.yaml`
 Note: 
 - DF player only supports certain SD cards and requires it to be formated in the right file system. See DF player documentation for details. 
 - DF player plays the MP3 files on the SD card by the order of the FAT entry. Advising the player to play file #3 plays the third file that was written to the sd card - no matter of its filename or folder location.
-- Most of the DF players I bought seem to have robustness issues as I saw them not responding every couple of months - which is bad for a doorbell. Ejecting and reinserting the SD card fixed the issue. 
+- Most of the DF players I bought have robustness issues as I saw them not responding every couple of months - pretty bad for a doorbell. Ejecting and reinserting the SD card seem to always fix the issue. 
 
 
 

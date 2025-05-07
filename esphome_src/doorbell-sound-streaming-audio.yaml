@@ -84,7 +84,8 @@ logger:
 
 
 script:
-  - id: trigger_doorbell_alt
+  - id: trigger_doorbell
+    mode: restart
     then:
       - if:
           condition:

@@ -10,7 +10,7 @@ substitutions:
   i2s_bclk: GPIO27 
   i2s_data: GPIO25 
 
-  ringtone_filepath: "./doorbell.mp3"
+  ringtone_filepath: "./doorbell.wav"
 
 
 packages:
@@ -50,7 +50,7 @@ media_player:
       speaker: output_speaker
       format: WAV
     codec_support_enabled: true
-    buffer_size: 6000
+    buffer_size: 22050
     files:
       - id: ringtone
         file: $ringtone_filepath
@@ -83,6 +83,7 @@ logger:
 
 script:
   - id: trigger_doorbell
+    mode: restart
     then:
       - event.trigger:
           id: doorbell_event
