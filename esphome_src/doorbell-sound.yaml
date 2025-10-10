@@ -2,8 +2,14 @@ substitutions:
   name: doorbell-sound
   friendly_name: Doorbell (I2S player variant)
   comment: Standalone MP3 Doorbell with HA integration   
+  project_name: doorbell_sound_i2s.esphome
 
-  TAG: "doorbell-sound"
+  TAG: "doorbell-sound-i2s"
+
+  api_key: "11lGH1DRWWRbDD6H9T5t5PJgBwYQzParaIg80WHF6aw="
+  ota_pw: "3f6786b29f445e0ac078c0bfec10c81d"
+  fallback_hotspot_ssid: "Doorbell-Sound I2S Fallback Hotspot"
+  fallback_hotspot_pw: "cWavxIxc6o5K"
 
   # GPIO Pins
   i2s_lrclk: GPIO26 

@@ -2,8 +2,16 @@ substitutions:
   name: doorbell-sound-sd-card
   friendly_name: Doorbell (SD card player variant)
   comment: Standalone MP3 Doorbell with HA integration and ringtones via SD card   
+  project_name: doorbell_sound_sd_card.esphome
 
-  TAG: "doorbell-sound"
+  TAG: "doorbell-sound-sd-card"
+
+  api_key: "11lGH1DRWWRbDD6H9T5t5PJgBwYQzParaIg80WHF6aw="
+  ota_pw: "3f6786b29f445e0ac078c0bfec10c81d"
+  fallback_hotspot_ssid: "Doorbell-Sound SD Card Fallback Hotspot"
+  fallback_hotspot_pw: "cWavxIxc6o5K"
+
+
 
 
   # GPIO Pins

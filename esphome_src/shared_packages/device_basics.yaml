@@ -24,6 +24,10 @@ esphome:
   friendly_name: ${friendly_name}
   comment: ${comment}
   compile_process_limit: 1
+  project:
+    name: ${project_name} 
+    version: '1.0'
+
 
 esp32:
   board: esp32dev
@@ -32,12 +36,21 @@ esp32:
     version: recommended
 
 
+
 # Enable logging
 logger:
 
+# Enable Home Assistant API
+api:
+  encryption:
+    key: ${api_key}
+
 ota:
-  - platform: esphome
-    password: "3f6786b29f445e0ac078c0bfec10c81d"
+  platform: esphome
+  password: ${ota_pw}
+
+# Allow provisioning Wi-Fi via serial
+improv_serial:
 
 wifi:
   ssid: !secret wifi_ssid
@@ -45,19 +58,13 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Doorbell-Sound Fallback Hotspot"
-    password: "cWavxIxc6o5K"
+    ssid: ${fallback_hotspot_ssid} 
+    password: ${fallback_hotspot_pw} 
+    
 
 # In combination with the `ap` this allows the user
 # to provision wifi credentials to the device via WiFi AP.
-#captive_portal:
-
-# Allow provisioning Wi-Fi via serial
-#improv_serial:
-
-#dashboard_import:
-#  package_import_url: github://esphome/example-configs/esphome-web/esp32.yaml@main
-#  import_full_config: true
+captive_portal:
 
 # Sets up Bluetooth LE (Only on ESP32) to allow the user
 # to provision wifi credentials to the device.
@@ -68,12 +75,6 @@ wifi:
 #web_server:
 #  port: 80
 #  version: 3  
-
-
-api:
-  encryption:
-    key: "Tl2rJtTss0xoQ792MStUvP3Lopg0qZX50jRWxrQ8y3E="
-
 
 
 

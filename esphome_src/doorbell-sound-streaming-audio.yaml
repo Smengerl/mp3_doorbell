@@ -2,8 +2,14 @@ substitutions:
   name: doorbell-sound-streaming-audio
   friendly_name: Doorbell (Streaming audio variant)
   comment: Standalone MP3 Doorbell with streaming audio ringtone and HA integration   
+  project_name: doorbell_sound_streaming_audio.esphome
 
-  TAG: "doorbell-sound"
+  TAG: "doorbell-sound-streaming-audio"
+
+  api_key: "11lGH1DRWWRbDD6H9T5t5PJgBwYQzParaIg80WHF6aw="
+  ota_pw: "3f6786b29f445e0ac078c0bfec10c81d"
+  fallback_hotspot_ssid: "Doorbell-Sound Streaming Audio Fallback Hotspot"
+  fallback_hotspot_pw: "cWavxIxc6o5K"
 
   # GPIO Pins
   i2s_lrclk: GPIO26 
