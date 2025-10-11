@@ -6,7 +6,7 @@ substitutions:
 
   TAG: "doorbell-sound-streaming-audio"
 
-  api_key: "11lGH1DRWWRbDD6H9T5t5PJgBwYQzParaIg80WHF6aw="
+  api_key: "Qm7xZp9vLk2tWnYcRo8sJfHgXe5uTqCvMb4aKzErLyU="
   ota_pw: "3f6786b29f445e0ac078c0bfec10c81d"
   fallback_hotspot_ssid: "Doorbell-Sound Streaming Audio Fallback Hotspot"
   fallback_hotspot_pw: "cWavxIxc6o5K"
