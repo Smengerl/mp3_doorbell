@@ -1,5 +1,9 @@
 # Multi-purpose MP3 doorbell for home assistant
 
+[![3D Printing](https://img.shields.io/badge/3D_printing-STL-green)](#)
+[![ESPhome](https://img.shields.io/badge/homeassistant-ESPhome-green)](#)
+[![License](https://img.shields.io/badge/license-Beerware-green)](#)
+
 This project features an ESP32-based doorbell designed for integration with Home Assistant. It allows you to play custom doorbell sounds from an SD card or stream audio, making it a versatile addition to your smart home setup.
 
 Features
