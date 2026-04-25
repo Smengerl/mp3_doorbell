@@ -6,6 +6,15 @@
 
 This project features an ESP32-based doorbell designed for integration with Home Assistant. It allows you to play custom doorbell sounds from an SD card or stream audio, making it a versatile addition to your smart home setup.
 
+## Table of Contents
+- [Mechanics](#mechanics)
+- [Electronics](#electronics)
+- [Usage](#usage)
+- [Acknowledgements](#acknowledgements)
+- [Development](#development)
+- [License](#license)
+- [Authors](#authors)
+
 Features
 - Robust Design: A 3D-printed structure for mounting on a DIN rail.
 - Standalone Functionality: Fully functional doorbell without any need to build automations in home assistant
