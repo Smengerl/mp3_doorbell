@@ -1,145 +1,21 @@
+# DOORBELL WITH I2S SPEAKER + STREAMING MP3 FROM A URL
+# Shared HW/system config: doorbell_packages/device_basics.yaml
+# Audio: doorbell_packages/i2s_player_streaming_arduino.yaml
+#   (I2S speaker, MP3 streamed from a URL - needs the Arduino framework)
 substitutions:
   name: doorbell-sound-streaming-audio
   friendly_name: Doorbell (Streaming audio variant)
-  comment: Standalone MP3 Doorbell with streaming audio ringtone and HA integration   
+  comment: Standalone MP3 Doorbell with streaming audio ringtone and HA integration
   project_name: doorbell_sound_streaming_audio.esphome
 
-  TAG: "doorbell-sound-streaming-audio"
+  TAG: "doorbell-sound-streaming-audio.yaml"
 
   api_key: "Qm7xZp9vLk2tWnYcRo8sJfHgXe5uTqCvMb4aKzErLyU="
   ota_pw: "3f6786b29f445e0ac078c0bfec10c81d"
   fallback_hotspot_ssid: "Doorbell-Sound Streaming Audio Fallback Hotspot"
   fallback_hotspot_pw: "cWavxIxc6o5K"
 
-  # GPIO Pins
-  i2s_lrclk: GPIO26 
-  i2s_bclk: GPIO27 
-  i2s_data: GPIO25 
-
-  ringtone_filepath: "./doorbell_packages/doorbell.mp3"
-
-
 packages:
   debug_basics: !include shared_packages/debug_basics.yaml
   device_basics: !include doorbell_packages/device_basics.yaml
-
-
-
-
-
-
-substitutions:
-  # GPIO Pins
-  i2s_lrclk: GPIO26 
-  i2s_bclk: GPIO27 
-  i2s_data: GPIO25 
-
-
-
-
-# Example configuration entry
-i2s_audio:
-  i2s_lrclk_pin: $i2s_lrclk
-  i2s_bclk_pin: $i2s_bclk
-
-# Example configuration entry
-media_player:
-  - platform: i2s_audio
-    name: "Doorbell Media Player"
-    icon: mdi:doorbell
-    id: i2s_media_player_id
-    dac_type: external
-    i2s_dout_pin: $i2s_data
-    mode: mono
-
-    on_idle:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Doorbell playback finished!");
-    on_pause:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Player pause");
-    on_play:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Player play");
-    on_announcement:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Player announcement");
-
-
-text:
-  - platform: template
-    id: ringtone_path
-    name: "Ringtone URL"
-    icon: mdi:download
-    mode: text
-    optimistic: true
-    restore_value: true
-    initial_value: "http://homeassistant.local:8123/local/doorbell.mp3"
-    on_value:
-      - logger.log:
-          format: "Ringtone URL changed"
-          level: INFO
-          tag: "${TAG}"
-
-
-
-logger:
-  level: DEBUG
-  logs:
-    media_player: DEBUG
-
-
-script:
-  - id: trigger_doorbell
-    mode: restart
-    then:
-      - if:
-          condition:
-            - media_player.is_playing: 
-                id: i2s_media_player_id
-          then:
-            - media_player.stop: 
-                id: i2s_media_player_id
-            - logger.log:
-                format: "Media player still playing. Cancelling"
-                level: WARN
-                tag: "${TAG}"
-
-      - event.trigger:
-          id: doorbell_event
-          event_type: "button_pressed"
-
-      - light.turn_on:
-          id: onboard_led
-      - light.turn_on:
-          id: doorbell_led_internal
-          effect: "${fast_pulse_effect_name}"
-
-      - media_player.volume_set: 
-          id: i2s_media_player_id
-          volume: !lambda 'return id(var_volume).state / 100.0;'
-
-      - media_player.play_media: 
-          id: i2s_media_player_id
-          media_url: !lambda 'return id(ringtone_path).state;'
-
-      - wait_until:
-          media_player.is_idle:
-            id: i2s_media_player_id
-      - light.turn_off:
-          id: onboard_led
-      - if:
-          condition:
-            lambda: |-
-              return id(doorbell_led).state;
-          then:
-            - light.turn_on:
-                id: doorbell_led_internal
-                effect: "None"
-          else:
-            - light.turn_off:
-                id: doorbell_led_internal
-
-
-
-
+  i2s_player_streaming_arduino: !include doorbell_packages/i2s_player_streaming_arduino.yaml

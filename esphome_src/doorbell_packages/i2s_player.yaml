@@ -1,0 +1,145 @@
+# *******************************************************
+# Doorbell audio package: I2S speaker + local WAV file (esp-idf).
+# Include together with doorbell_packages/device_basics.yaml.
+# *******************************************************
+substitutions:
+  # GPIO Pins
+  i2s_lrclk: GPIO26
+  i2s_bclk: GPIO27
+  i2s_data: GPIO25
+
+  ringtone_filepath: "./doorbell_packages/doorbell.wav"
+
+number:
+  # "Volume" 0-100 -> media_player 0.0-1.0. Straight to the player (on_value + on_boot),
+  # not per ring.
+  - platform: template
+    name: "Volume"
+    id: var_volume
+    icon: "mdi:volume-high"
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 100
+    step: 1
+    initial_value: ${default_volume}
+    on_value:
+      then:
+        - media_player.volume_set:
+            id: i2s_media_player_id
+            volume: !lambda "return x / 100.0;"
+
+esphome:
+  on_boot:
+    priority: -10
+    then:
+      - media_player.volume_set:
+          id: i2s_media_player_id
+          volume: !lambda "return id(var_volume).state / 100.0;"
+
+# I2S bus config
+i2s_audio:
+  i2s_lrclk_pin: $i2s_lrclk
+  i2s_bclk_pin: $i2s_bclk
+
+# Speaker component for raw audio output
+speaker:
+  - platform: i2s_audio
+    id: output_speaker
+    i2s_dout_pin: $i2s_data
+    dac_type: external
+    #bits_per_sample: 32bit
+    #channel: right
+    #buffer_duration: 60ms
+
+# Media player to decode audio files and send to the speaker
+media_player:
+  - platform: speaker
+    id: i2s_media_player_id
+    announcement_pipeline:
+      speaker: output_speaker
+      format: WAV
+    buffer_size: 22050
+    files:
+      - id: ringtone
+        file: $ringtone_filepath
+    on_mute:
+      - lambda: |-
+          ESP_LOGI("${TAG}", "Media player muted");
+    on_unmute:
+      - lambda: |-
+          ESP_LOGI("${TAG}", "Media player unmuted");
+    on_volume:
+      - lambda: |-
+          ESP_LOGI("${TAG}", "Media player volume change!");
+    on_idle:
+      - lambda: |-
+          ESP_LOGI("${TAG}", "Doorbell playback finished!");
+      - script.stop: doorbell_led_watchdog
+      - script.execute: doorbell_leds_off
+    on_pause:
+      - lambda: |-
+          ESP_LOGI("${TAG}", "Player pause");
+    on_play:
+      - lambda: |-
+          ESP_LOGI("${TAG}", "Player play");
+    on_announcement:
+      - lambda: |-
+          ESP_LOGI("${TAG}", "Player announcement");
+
+logger:
+  # INFO is enough - the relevant events (play/idle/announcement) are logged by the
+  # media_player lambdas above via ESP_LOGI anyway. DEBUG here made the device
+  # noticeably slow due to serial logging.
+  level: INFO
+
+script:
+  - id: trigger_doorbell
+    mode: restart
+    then:
+      - event.trigger:
+          id: doorbell_event
+          event_type: "ring"
+      - light.turn_on:
+          id: onboard_led
+      - light.turn_on:
+          id: doorbell_led_internal
+          effect: "${fast_pulse_effect_name}"
+      - media_player.volume_set:
+          id: i2s_media_player_id
+          volume: !lambda 'return id(var_volume).state / 100.0;'
+      - media_player.speaker.play_on_device_media_file:
+          id: i2s_media_player_id
+          media_file: ringtone
+          announcement: true
+          enqueue: false
+      # The LEDs are NOT cleaned up here with wait_until - that hung forever on
+      # playback errors (missing file, speaker init, swallowed state). Instead it is
+      # event-driven via media_player on_idle (-> doorbell_leds_off), with
+      # doorbell_led_watchdog as a safety net.
+      - script.execute: doorbell_led_watchdog
+
+  # LEDs back to their resting state: onboard off, doorbell LED per the switch state.
+  - id: doorbell_leds_off
+    then:
+      - light.turn_off:
+          id: onboard_led
+      - if:
+          condition:
+            lambda: "return id(doorbell_led).state;"
+          then:
+            - light.turn_on:
+                id: doorbell_led_internal
+                effect: "None"
+          else:
+            - light.turn_off:
+                id: doorbell_led_internal
+
+  # Safety net: no ringtone lasts 30s. If no on_idle arrives (error / missed event)
+  # the LEDs go off anyway.
+  - id: doorbell_led_watchdog
+    mode: restart
+    then:
+      - delay: 30s
+      - lambda: 'ESP_LOGW("${TAG}", "Doorbell watchdog: no idle report -> LEDs off");'
+      - script.execute: doorbell_leds_off

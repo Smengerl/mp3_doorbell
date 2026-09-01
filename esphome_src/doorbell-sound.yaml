@@ -1,143 +1,20 @@
+# DOORBELL WITH I2S SPEAKER + LOCAL WAV (built-in ringtone, no SD card)
+# Shared HW/system config: doorbell_packages/device_basics.yaml
+# Audio: doorbell_packages/i2s_player.yaml (I2S speaker, local doorbell.wav)
 substitutions:
   name: doorbell-sound
-  friendly_name: Doorbell (I2S player variant)
-  comment: Standalone MP3 Doorbell with HA integration   
-  project_name: doorbell_sound_i2s.esphome
+  friendly_name: Doorbell
+  comment: Standalone MP3 Doorbell with HA integration (I2S speaker + local WAV)
+  project_name: doorbell_sound.esphome
 
-  TAG: "doorbell-sound-i2s"
+  TAG: "doorbell-sound.yaml"
 
   api_key: "7nYxgKZqYw2vT3g9rLhXJvZkQm8sN5cUoWbRzXyTqvE="
   ota_pw: "3f6786b29f445e0ac078c0bfec10c81d"
-  fallback_hotspot_ssid: "Doorbell-Sound I2S Fallback Hotspot"
+  fallback_hotspot_ssid: "Doorbell-Sound Fallback Hotspot"
   fallback_hotspot_pw: "cWavxIxc6o5K"
-
-  # GPIO Pins
-  i2s_lrclk: GPIO26 
-  i2s_bclk: GPIO27 
-  i2s_data: GPIO25 
-
-  ringtone_filepath: "./doorbell.wav"
-
 
 packages:
   debug_basics: !include shared_packages/debug_basics.yaml
   device_basics: !include doorbell_packages/device_basics.yaml
-
-
-
-
-
-
-
-
-
-
-
-# I2S bus config
-i2s_audio:
-  i2s_lrclk_pin: $i2s_lrclk
-  i2s_bclk_pin: $i2s_bclk
-
-# Speaker component for raw audio output
-speaker:
-  - platform: i2s_audio
-    id: output_speaker
-    i2s_dout_pin: $i2s_data
-    dac_type: external    
-    #bits_per_sample: 32bit
-    #channel: right
-    #buffer_duration: 60ms
-
-# Media player to decode audio files and send to speaker
-media_player:
-  - platform: speaker
-    id: i2s_media_player_id
-    announcement_pipeline:
-      speaker: output_speaker
-      format: WAV
-    codec_support_enabled: true
-    buffer_size: 22050
-    files:
-      - id: ringtone
-        file: $ringtone_filepath
-    on_mute:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Media player muted");
-    on_unmute:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Media player unmuted");
-    on_volume:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Media player volume change!");
-    on_idle:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Doorbell playback finished!");
-    on_pause:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Player pause");
-    on_play:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Player play");
-    on_announcement:
-      - lambda: |-
-          ESP_LOGI("${TAG}", "Player announcement");
-
-logger:
-  level: DEBUG
-  logs:
-    media_player: DEBUG
-
-script:
-  - id: trigger_doorbell
-    mode: restart
-    then:
-      - event.trigger:
-          id: doorbell_event
-          event_type: "button_pressed"
-
-      - light.turn_on:
-          id: onboard_led
-      - light.turn_on:
-          id: doorbell_led_internal
-          effect: "${fast_pulse_effect_name}"
-
-      - media_player.volume_set: 
-          id: i2s_media_player_id
-          volume: !lambda 'return id(var_volume).state / 100.0;'
-
-
-      - media_player.speaker.play_on_device_media_file: 
-          id: i2s_media_player_id
-          media_file: ringtone
-          announcement: true
-          enqueue: false
-      - wait_until:
-          media_player.is_announcing:
-            id: i2s_media_player_id
-      - wait_until:
-          not:
-            media_player.is_announcing:
-              id: i2s_media_player_id
-
-
-      - wait_until:
-          media_player.is_idle:
-            id: i2s_media_player_id
-      - light.turn_off:
-          id: onboard_led
-      - if:
-          condition:
-            lambda: |-
-              return id(doorbell_led).state;
-          then:
-            - light.turn_on:
-                id: doorbell_led_internal
-                effect: "None"
-          else:
-            - light.turn_off:
-                id: doorbell_led_internal
-
-
-
-
-
+  i2s_player: !include doorbell_packages/i2s_player.yaml

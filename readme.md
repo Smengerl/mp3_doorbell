@@ -198,7 +198,9 @@ Features:
 
 Find the sourcecode here: `./esphome_src/doorbell-sound.yaml`
 
-Note that you might need to transcode your MP3 ringtone to WAV format to not require on-the-fly decoding. You can use ffmpeg for this. As the file is included in the image, use mono and very low bitrate, e.g. `ffmpeg -i doorbell.mp3 -ar 22050 -ac 1 -b:a 16000 doorbell.wav`
+Note that you might need to transcode your MP3 ringtone to WAV format to not require on-the-fly decoding. You can use ffmpeg for this. As the file is included in the image, use mono and very low bitrate, e.g. `ffmpeg -i doorbell.mp3 -ar 22050 -ac 1 -b:a 16000 doorbell.wav`. Place the result at `./esphome_src/doorbell_packages/doorbell.wav`.
+
+The device configs are split into small packages under `./esphome_src/doorbell_packages/`: `device_basics.yaml` holds the shared hardware/system config, and each device file pulls in exactly one audio package (`i2s_player.yaml`, `df_player.yaml` or `i2s_player_streaming_arduino.yaml`).
 
 
 ### MP3 doorbell with SD card ringtones
@@ -267,7 +269,7 @@ triggers:
   entity_id:
     - event.doorbell_sound_doorbell_button
   attribute: event_type
-  to: button_pressed
+  to: ring
 conditions: []
 actions:
 - metadata: {}
