@@ -12,7 +12,7 @@ substitutions:
   api_key: !secret doorbell_api_key
   ota_pw: !secret doorbell_ota_pw
   fallback_hotspot_ssid: "Doorbell-Sound Fallback Hotspot"
-  fallback_hotspot_pw: "cWavxIxc6o5K"
+  fallback_hotspot_pw: !secret doorbell_fallback_pw
 
 packages:
   debug_basics: !include shared_packages/debug_basics.yaml
