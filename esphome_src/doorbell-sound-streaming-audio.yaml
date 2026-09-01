@@ -10,8 +10,8 @@ substitutions:
 
   TAG: "doorbell-sound-streaming-audio.yaml"
 
-  api_key: "Qm7xZp9vLk2tWnYcRo8sJfHgXe5uTqCvMb4aKzErLyU="
-  ota_pw: "3f6786b29f445e0ac078c0bfec10c81d"
+  api_key: !secret doorbell_streaming_api_key
+  ota_pw: !secret doorbell_streaming_ota_pw
   fallback_hotspot_ssid: "Doorbell-Sound Streaming Audio Fallback Hotspot"
   fallback_hotspot_pw: "cWavxIxc6o5K"
 

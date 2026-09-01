@@ -9,8 +9,8 @@ substitutions:
 
   TAG: "doorbell-sound-sd-card.yaml"
 
-  api_key: "Tl2rJtTss0xoQ792MStUvP3Lopg0qZX50jRWxrQ8y3E="
-  ota_pw: "3f6786b29f445e0ac078c0bfec10c81d"
+  api_key: !secret doorbell_sd_card_api_key
+  ota_pw: !secret doorbell_sd_card_ota_pw
   fallback_hotspot_ssid: "Doorbell-Sound SD Card Fallback Hotspot"
   fallback_hotspot_pw: "cWavxIxc6o5K"
 

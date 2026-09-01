@@ -9,8 +9,8 @@ substitutions:
 
   TAG: "doorbell-sound.yaml"
 
-  api_key: "7nYxgKZqYw2vT3g9rLhXJvZkQm8sN5cUoWbRzXyTqvE="
-  ota_pw: "3f6786b29f445e0ac078c0bfec10c81d"
+  api_key: !secret doorbell_api_key
+  ota_pw: !secret doorbell_ota_pw
   fallback_hotspot_ssid: "Doorbell-Sound Fallback Hotspot"
   fallback_hotspot_pw: "cWavxIxc6o5K"
 
