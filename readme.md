@@ -182,6 +182,8 @@ Make sure to establish the following connections within the housing between ESP,
 - Once powered on, adopt the device via ESP home
 - Adapt it to your usage scenarios via home assistant (see examples below)
 
+Before flashing, copy [`esphome_src/secrets.yaml.example`](./esphome_src/secrets.yaml.example) to `[homeassistant]/config/esphome/secrets.yaml` and fill in your own values. It holds `wifi_ssid` / `wifi_password` plus a per-variant API key and OTA password (`doorbell_*`, `doorbell_sd_card_*`, `doorbell_streaming_*`) - you only need the keys for the variant(s) you build. `secrets.yaml` is git-ignored.
+
 
 ### MP3 doorbell
 

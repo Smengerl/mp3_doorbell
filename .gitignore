@@ -1,3 +1,6 @@
 mp3_doorbell.code-workspace
 
 .DS_Store
+
+# ESPHome secrets - copy secrets.yaml.example to secrets.yaml
+secrets.yaml
