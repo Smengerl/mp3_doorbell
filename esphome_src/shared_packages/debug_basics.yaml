@@ -29,6 +29,7 @@ sensor:
     update_interval: 60s
     entity_category: diagnostic
 
+
 #-------------------------------------------
 # Connection Status
 #-------------------------------------------

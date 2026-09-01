@@ -10,6 +10,9 @@ substitutions:
 
   TAG: "doorbell-sound-streaming-audio.yaml"
 
+  # Streaming MP3 decode needs the Arduino framework (overrides device_basics' esp-idf default)
+  doorbell_framework: arduino
+
   api_key: !secret doorbell_streaming_api_key
   ota_pw: !secret doorbell_streaming_ota_pw
   fallback_hotspot_ssid: "Doorbell-Sound Streaming Audio Fallback Hotspot"

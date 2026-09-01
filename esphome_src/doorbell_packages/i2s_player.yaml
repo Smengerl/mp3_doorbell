@@ -26,7 +26,7 @@ number:
     on_value:
       then:
         - media_player.volume_set:
-            id: i2s_media_player_id
+            id: i2s_media_player
             volume: !lambda "return x / 100.0;"
 
 esphome:
@@ -34,7 +34,7 @@ esphome:
     priority: -10
     then:
       - media_player.volume_set:
-          id: i2s_media_player_id
+          id: i2s_media_player
           volume: !lambda "return id(var_volume).state / 100.0;"
 
 # I2S bus config
@@ -55,7 +55,7 @@ speaker:
 # Media player to decode audio files and send to the speaker
 media_player:
   - platform: speaker
-    id: i2s_media_player_id
+    id: i2s_media_player
     announcement_pipeline:
       speaker: output_speaker
       format: WAV
@@ -106,10 +106,10 @@ script:
           id: doorbell_led_internal
           effect: "${fast_pulse_effect_name}"
       - media_player.volume_set:
-          id: i2s_media_player_id
+          id: i2s_media_player
           volume: !lambda 'return id(var_volume).state / 100.0;'
       - media_player.speaker.play_on_device_media_file:
-          id: i2s_media_player_id
+          id: i2s_media_player
           media_file: ringtone
           announcement: true
           enqueue: false

@@ -2,13 +2,12 @@
 # Doorbell audio package: I2S speaker, MP3 STREAMING from a URL (arduino).
 # Include together with doorbell_packages/device_basics.yaml.
 #
-# NOTE: streaming MP3 decode needs the Arduino framework -> this package switches
-# device_basics to it via the doorbell_framework substitution.
+# NOTE: streaming MP3 decode needs the Arduino framework. The including device
+# file MUST set `doorbell_framework: arduino` in its own substitutions block
+# (a main-file substitution reliably wins over device_basics' esp-idf default;
+# a package-level override does not). See doorbell-sound-streaming-audio.yaml.
 # *******************************************************
 substitutions:
-  # Streaming MP3 decode needs the Arduino framework -> switch device_basics over
-  doorbell_framework: arduino
-
   # GPIO Pins
   i2s_lrclk: GPIO26
   i2s_bclk: GPIO27
@@ -22,7 +21,7 @@ media_player:
   - platform: i2s_audio
     name: "Doorbell Media Player"
     icon: mdi:doorbell
-    id: i2s_media_player_id
+    id: i2s_media_player
     dac_type: external
     i2s_dout_pin: $i2s_data
     mode: mono
@@ -65,7 +64,7 @@ number:
     on_value:
       then:
         - media_player.volume_set:
-            id: i2s_media_player_id
+            id: i2s_media_player
             volume: !lambda "return x / 100.0;"
 
 esphome:
@@ -73,7 +72,7 @@ esphome:
     priority: -10
     then:
       - media_player.volume_set:
-          id: i2s_media_player_id
+          id: i2s_media_player
           volume: !lambda "return id(var_volume).state / 100.0;"
 
 script:
@@ -83,11 +82,11 @@ script:
       - if:
           condition:
             - media_player.is_playing:
-                id: i2s_media_player_id
+                id: i2s_media_player
           then:
             - lambda: 'ESP_LOGW("${TAG}", "Playback was still active when the doorbell rang. Possible error.");'
             - media_player.stop:
-                id: i2s_media_player_id
+                id: i2s_media_player
       - event.trigger:
           id: doorbell_event
           event_type: "ring"
@@ -103,7 +102,7 @@ script:
             return;
           }
           ESP_LOGI("${TAG}", "Doorbell triggered! (Volume: %d; URL: %s)", (int)id(var_volume).state, url.c_str());
-          id(i2s_media_player_id).make_call().set_media_url(url).perform();
+          id(i2s_media_player).make_call().set_media_url(url).perform();
       # The LEDs are NOT cleaned up here with wait_until - that hung forever on
       # stream / playback errors. Instead it is event-driven via media_player
       # on_idle (-> doorbell_leds_off), with doorbell_led_watchdog as a safety net.
