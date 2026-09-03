@@ -37,6 +37,7 @@ esphome:
   name: ${name}
   friendly_name: ${friendly_name}
   comment: ${comment}
+  min_version: "2026.8.1"
   compile_process_limit: 1
   project:
     name: ${project_name}
