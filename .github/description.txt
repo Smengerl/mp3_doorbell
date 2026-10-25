@@ -1,1 +1,1 @@
-Multi-purpose MP3 doorbell for ESPhome / home assistant based on ESP32
+A $10 DIN-rail doorbell with your own MP3 ringtones: SD card or streaming, light effects, Home Assistant events. ESP32.

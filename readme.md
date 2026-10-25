@@ -1,33 +1,27 @@
-# Multi-purpose MP3 doorbell for home assistant
+# MP3 doorbell for Home Assistant
 
 [![3D Printing](https://img.shields.io/badge/3D_printing-STL-green)](#)
 [![ESPhome](https://img.shields.io/badge/homeassistant-ESPhome-green)](#)
 [![License](https://img.shields.io/badge/license-CC%20BY--SA%204.0-blue)](http://creativecommons.org/licenses/by-sa/4.0/)
 
+<p align="center">
+  <img src="./print/doorbell/rendering/rendering_doorbell_case.png" alt="DIN rail doorbell case" height="320">
+  <img src="./print/power_supply/rendering/rendering_power_supply.png" alt="Optional DIN rail power supply" height="320">
+</p>
+
 This project features an ESP32-based doorbell designed for integration with Home Assistant. It allows you to play custom doorbell sounds from an SD card or stream audio, making it a versatile addition to your smart home setup.
 
-## Table of Contents
-- [Mechanics](#mechanics)
-- [Electronics](#electronics)
-- [Usage](#usage)
-- [Acknowledgements](#acknowledgements)
-- [Development](#development)
-- [License](#license)
-- [Authors](#authors)
-
-Features
-- Robust Design: A 3D-printed structure for mounting on a DIN rail.
-- Standalone Functionality: Fully functional doorbell without any need to build automations in home assistant
-- Versatile Audio Output: Can be used as an audio output device for any Home Assistant automation, not limited to doorbell use.
-- Custom Sounds: Play your own MP3 files as ringtone
-- SD card support: Optional support to provide exchangeable ringtones via SD card or use streaming audio via a network player.
-- Doorbell Light Support: Includes light effects when ringing.
-- Home Assistant Integration: Exposes states and events via ESPHome, enabling triggers for automations.
-- Low-Cost Hardware: Build the doorbell for approximately $10.
-- Optional Power Supply: Separate 5V power supply with dual USB-C ports for usage with other DIN rail parts.
-- Example Automations: Includes example code for triggering actions when door in rung like camera snapshots.
-
-
+## Features
+- **Robust design**: A 3D-printed structure for mounting on a DIN rail.
+- **Standalone functionality**: Fully functional doorbell without any need to build automations in Home Assistant.
+- **Versatile audio output**: Can be used as an audio output device for any Home Assistant automation, not limited to doorbell use.
+- **Custom sounds**: Play your own MP3 files as ringtone.
+- **SD card support**: Optional support to provide exchangeable ringtones via SD card, or use streaming audio via a network player.
+- **Doorbell light support**: Includes light effects when ringing.
+- **Home Assistant integration**: Exposes states and events via ESPHome, enabling triggers for automations.
+- **Low-cost hardware**: Build the doorbell for approximately $10.
+- **Optional power supply**: Separate 5V power supply with dual USB-C ports for usage with other DIN rail parts.
+- **Example automations**: Includes example code for triggering actions when the door is rung, like camera snapshots.
 
 | Module | Rendering |
 | ---------------------------- | --------------------------------------------------------------------|
@@ -35,22 +29,18 @@ Features
 | Doorbell DIN rail case (no SD card version) | <img src="./print/doorbell/rendering/rendering_doorbell_case_no_sd.png" height=300px /> |
 | Optional 5V power supply including double USB power out | <img src="./print/power_supply/rendering/rendering_power_supply.png" height=300px /> |
 
-
-# Index
-- [Mechanics](#Mechanics)
-- [Electronics](#Electronics)
+## Table of Contents
+- [Mechanics](#mechanics)
+- [Electronics](#electronics)
 - [Usage: MP3 doorbell](#mp3-doorbell)
 - [Usage: MP3 doorbell with SD card ringtones](#mp3-doorbell-with-sd-card-ringtones)
 - [Usage: MP3 doorbell with streaming audio ringtones](#mp3-doorbell-with-streaming-audio-ringtones)
 - [Usage: Camera snapshot](#doorbell-with-camera-snapshot-and-ai-push-notification)
 - [Usage: Home Reminder](#home-reminder)
-- [Acknowledgements](#Acknowledgements)
-
-
-
-
- 
-
+- [Acknowledgements](#acknowledgements)
+- [Development](#development)
+- [License](#license)
+- [Authors](#authors)
 
 ## Mechanics
 
